@@ -1,7 +1,10 @@
+using Infrastructure;
 using Server.Composition;
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
 
+builder.Services.AddInfrastructure(configuration);
 builder.Services.AddPresentation();
 
 builder.Services.AddControllersWithViews();
