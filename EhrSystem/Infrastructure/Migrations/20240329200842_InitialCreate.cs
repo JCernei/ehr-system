@@ -44,6 +44,8 @@ namespace Infrastructure.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     LastName = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    Idnp = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     UserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     NormalizedUserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
@@ -228,9 +230,10 @@ namespace Infrastructure.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { new Guid("07ad6ee5-3970-4ea1-a8de-0504f9beee3e"), null, "User", "User" },
-                    { new Guid("458c16f1-ee3b-4e16-b95b-f5a6ada6650f"), null, "Admin", "Admin" },
-                    { new Guid("a055a593-4a28-4281-b917-2a96bd594e97"), null, "Doctor", "Doctor" }
+                    { new Guid("64eed626-7ad3-4af1-bffa-1118b60ed549"), null, "Doctor", "Doctor" },
+                    { new Guid("7a16cc6e-90a4-4050-9621-b38a8d400d33"), null, "LabTechnician", "LabTechnician" },
+                    { new Guid("b18a66c6-d904-4e6a-b20d-34ec31d8fe52"), null, "Admin", "Admin" },
+                    { new Guid("d6712e95-2ea2-4bb4-8618-beed98301ba1"), null, "User", "User" }
                 });
 
             migrationBuilder.CreateIndex(

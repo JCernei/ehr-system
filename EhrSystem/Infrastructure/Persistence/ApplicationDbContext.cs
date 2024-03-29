@@ -9,13 +9,10 @@ namespace Infrastructure.Persistence;
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
     : IdentityDbContext<User, IdentityRole<Guid>, Guid>(options)
 {
-    public DbSet<User> Users { get; set; }
     public DbSet<Consultation> Consultations { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<User>()
-            .HasKey(x => x.Id);
         modelBuilder.Entity<Consultation>()
             .HasKey(x => x.Id);
 

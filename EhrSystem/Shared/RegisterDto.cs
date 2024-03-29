@@ -1,10 +1,10 @@
-using Microsoft.AspNetCore.Identity;
+namespace Shared;
 
-namespace Domain.Models;
 
-public class User : IdentityUser<Guid>
+public class RegisterDto
 {
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string Idnp { get; set; }
+    public string Password { get; set; }
 }

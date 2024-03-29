@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240325184046_InitialCreate")]
+    [Migration("20240329200842_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -74,6 +74,10 @@ namespace Infrastructure.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Idnp")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -155,19 +159,25 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("07ad6ee5-3970-4ea1-a8de-0504f9beee3e"),
+                            Id = new Guid("d6712e95-2ea2-4bb4-8618-beed98301ba1"),
                             Name = "User",
                             NormalizedName = "User"
                         },
                         new
                         {
-                            Id = new Guid("a055a593-4a28-4281-b917-2a96bd594e97"),
+                            Id = new Guid("64eed626-7ad3-4af1-bffa-1118b60ed549"),
                             Name = "Doctor",
                             NormalizedName = "Doctor"
                         },
                         new
                         {
-                            Id = new Guid("458c16f1-ee3b-4e16-b95b-f5a6ada6650f"),
+                            Id = new Guid("7a16cc6e-90a4-4050-9621-b38a8d400d33"),
+                            Name = "LabTechnician",
+                            NormalizedName = "LabTechnician"
+                        },
+                        new
+                        {
+                            Id = new Guid("b18a66c6-d904-4e6a-b20d-34ec31d8fe52"),
                             Name = "Admin",
                             NormalizedName = "Admin"
                         });
