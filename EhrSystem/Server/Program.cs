@@ -5,6 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
 builder.Services.AddInfrastructure(configuration);
+builder.Services.AddJwtIdentity(configuration);
 builder.Services.AddPresentation();
 
 builder.Services.AddControllersWithViews();
@@ -29,7 +30,11 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
+
 app.Run();

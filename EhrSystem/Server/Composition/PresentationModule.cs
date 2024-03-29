@@ -1,3 +1,8 @@
+using Application.Commands.LoginUser;
+using Application.Commands.RegisterUser;
+using Application.Queries.GetConsultations;
+using Application.Queries.GetUserDetails;
+
 namespace Server.Composition;
 
 public static class PresentationModule
@@ -7,6 +12,7 @@ public static class PresentationModule
         services.AddMediatR(config =>
         {
             config.RegisterServicesFromAssembly(typeof(Program).Assembly);
+            config.RegisterServicesFromAssembly(typeof(GetConsultationsQuery).Assembly);
         });
 
         return services;
