@@ -50,6 +50,41 @@ namespace Infrastructure.Migrations
                     b.ToTable("Consultations");
                 });
 
+            modelBuilder.Entity("Domain.Models.LabResult", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("ImagePath")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid>("PatientId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("PdfPath")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Result")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("TestName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("TimeStamp")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PatientId");
+
+                    b.ToTable("LabResults");
+                });
+
             modelBuilder.Entity("Domain.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -298,6 +333,17 @@ namespace Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Doctor");
+
+                    b.Navigation("Patient");
+                });
+
+            modelBuilder.Entity("Domain.Models.LabResult", b =>
+                {
+                    b.HasOne("Domain.Models.User", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Patient");
                 });

@@ -13,6 +13,20 @@ public static class Mapper
             Description = source.Description
         };
     }
+    
+    public static LabResultDto Map(LabResult source)
+    {
+        return new LabResultDto
+        {
+            Id = source.Id,
+            PatientId = source.PatientId,
+            TestName = source.TestName,
+            Result = source.Result,
+            ImagePath = source.ImagePath,
+            PdfPath = source.PdfPath,
+            TimeStamp = source.TimeStamp
+        };
+    }
     public static UserDto Map(User source)
     {
         return new UserDto

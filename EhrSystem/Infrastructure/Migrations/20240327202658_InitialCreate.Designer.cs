@@ -12,7 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
+<<<<<<<< HEAD:EhrSystem/Infrastructure/Migrations/20240329200842_InitialCreate.Designer.cs
     [Migration("20240329200842_InitialCreate")]
+========
+    [Migration("20240327202658_InitialCreate")]
+>>>>>>>> ec0194a (Add lab results controller):EhrSystem/Infrastructure/Migrations/20240327202658_InitialCreate.Designer.cs
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -51,6 +55,41 @@ namespace Infrastructure.Migrations
                     b.HasIndex("PatientId");
 
                     b.ToTable("Consultations");
+                });
+
+            modelBuilder.Entity("Domain.Models.LabResult", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("ImagePath")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid>("PatientId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("PdfPath")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Result")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("TestName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("TimeStamp")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PatientId");
+
+                    b.ToTable("LabResults");
                 });
 
             modelBuilder.Entity("Domain.Models.User", b =>
@@ -159,18 +198,27 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
+<<<<<<<< HEAD:EhrSystem/Infrastructure/Migrations/20240329200842_InitialCreate.Designer.cs
                             Id = new Guid("d6712e95-2ea2-4bb4-8618-beed98301ba1"),
+========
+                            Id = new Guid("d0788de0-fbe6-4dcc-86e8-bf41ddd2d874"),
+>>>>>>>> ec0194a (Add lab results controller):EhrSystem/Infrastructure/Migrations/20240327202658_InitialCreate.Designer.cs
                             Name = "User",
                             NormalizedName = "User"
                         },
                         new
                         {
+<<<<<<<< HEAD:EhrSystem/Infrastructure/Migrations/20240329200842_InitialCreate.Designer.cs
                             Id = new Guid("64eed626-7ad3-4af1-bffa-1118b60ed549"),
+========
+                            Id = new Guid("2b74a16a-ee5b-44e1-a941-923d31f33ac9"),
+>>>>>>>> ec0194a (Add lab results controller):EhrSystem/Infrastructure/Migrations/20240327202658_InitialCreate.Designer.cs
                             Name = "Doctor",
                             NormalizedName = "Doctor"
                         },
                         new
                         {
+<<<<<<<< HEAD:EhrSystem/Infrastructure/Migrations/20240329200842_InitialCreate.Designer.cs
                             Id = new Guid("7a16cc6e-90a4-4050-9621-b38a8d400d33"),
                             Name = "LabTechnician",
                             NormalizedName = "LabTechnician"
@@ -178,6 +226,9 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("b18a66c6-d904-4e6a-b20d-34ec31d8fe52"),
+========
+                            Id = new Guid("8d3b2da9-0a96-48de-8443-43d8fc33c3cd"),
+>>>>>>>> ec0194a (Add lab results controller):EhrSystem/Infrastructure/Migrations/20240327202658_InitialCreate.Designer.cs
                             Name = "Admin",
                             NormalizedName = "Admin"
                         });
@@ -301,6 +352,17 @@ namespace Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Doctor");
+
+                    b.Navigation("Patient");
+                });
+
+            modelBuilder.Entity("Domain.Models.LabResult", b =>
+                {
+                    b.HasOne("Domain.Models.User", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Patient");
                 });
