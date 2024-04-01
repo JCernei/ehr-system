@@ -1,4 +1,3 @@
-using AutoMapper;
 using Domain.Models;
 using Infrastructure.Persistence;
 using MediatR;
@@ -19,7 +18,8 @@ public class GetLabResultByIdHandler : IRequestHandler<GetLabResultByIdQuery, La
     {
         var labResult = await dbContext.LabResults
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+            .FirstOrDefaultAsync(x => x.PatientId == request.PatientId && x.Id == request.LabResultId, cancellationToken);
+       
         return labResult;
     }
 }

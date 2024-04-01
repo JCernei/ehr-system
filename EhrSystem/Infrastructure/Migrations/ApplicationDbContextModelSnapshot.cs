@@ -215,25 +215,25 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("7210b422-f17b-4f70-9a09-8279cf011fd6"),
+                            Id = new Guid("08e46d4d-790a-4b87-98b4-87769a5b3950"),
                             Name = "User",
                             NormalizedName = "User"
                         },
                         new
                         {
-                            Id = new Guid("0157547f-b451-4b84-95b0-4eb285a6d2dc"),
+                            Id = new Guid("f90d8268-41bb-4c5d-b4c0-1febe9266a8b"),
                             Name = "Doctor",
                             NormalizedName = "Doctor"
                         },
                         new
                         {
-                            Id = new Guid("3646824b-419b-4b7e-835f-3a8169458a11"),
+                            Id = new Guid("be28b826-9df1-47b6-8d2f-6ed0b61949d2"),
                             Name = "LabTechnician",
                             NormalizedName = "LabTechnician"
                         },
                         new
                         {
-                            Id = new Guid("42e88610-3edf-4986-8a10-8ae204a9e9ef"),
+                            Id = new Guid("522e1b2f-deb6-4b58-8501-98020c166905"),
                             Name = "Admin",
                             NormalizedName = "Admin"
                         });
