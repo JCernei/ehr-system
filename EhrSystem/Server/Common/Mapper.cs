@@ -13,7 +13,7 @@ public static class Mapper
             Description = source.Description
         };
     }
-    
+
     public static LabResultDto Map(LabResult source)
     {
         return new LabResultDto
@@ -24,6 +24,7 @@ public static class Mapper
             FilePath = source.FilePath,
         };
     }
+
     public static LabResultDescriptionDto Map(LabResultDescription source)
     {
         return new LabResultDescriptionDto()
@@ -34,6 +35,7 @@ public static class Mapper
             Description = source.Description,
         };
     }
+
     public static UserDto Map(User source)
     {
         return new UserDto
