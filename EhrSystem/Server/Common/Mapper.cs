@@ -18,13 +18,20 @@ public static class Mapper
     {
         return new LabResultDto
         {
-            Id = source.Id,
             PatientId = source.PatientId,
+            LabTechnicianId = source.LabTechnicianId,
             TestName = source.TestName,
-            Result = source.Result,
-            ImagePath = source.ImagePath,
-            PdfPath = source.PdfPath,
-            TimeStamp = source.TimeStamp
+            FilePath = source.FilePath,
+        };
+    }
+    public static LabResultDescriptionDto Map(LabResultDescription source)
+    {
+        return new LabResultDescriptionDto()
+        {
+            PatientId = source.PatientId,
+            LabResultId = source.LabResultId,
+            DoctorId = source.DoctorId,
+            Description = source.Description,
         };
     }
     public static UserDto Map(User source)

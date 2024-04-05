@@ -12,11 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-<<<<<<<< HEAD:EhrSystem/Infrastructure/Migrations/20240329200842_InitialCreate.Designer.cs
-    [Migration("20240329200842_InitialCreate")]
-========
-    [Migration("20240327202658_InitialCreate")]
->>>>>>>> ec0194a (Add lab results controller):EhrSystem/Infrastructure/Migrations/20240327202658_InitialCreate.Designer.cs
+    [Migration("20240404130145_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -63,20 +59,15 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("ImagePath")
+                    b.Property<string>("FilePath")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<Guid>("LabTechnicianId")
+                        .HasColumnType("char(36)");
 
                     b.Property<Guid>("PatientId")
                         .HasColumnType("char(36)");
-
-                    b.Property<string>("PdfPath")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Result")
-                        .IsRequired()
-                        .HasColumnType("longtext");
 
                     b.Property<string>("TestName")
                         .IsRequired()
@@ -87,9 +78,38 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.ToTable("LabResults");
+                });
+
+            modelBuilder.Entity("Domain.Models.LabResultDescription", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid>("DoctorId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("LabResultId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("PatientId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("TimeStamp")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LabResultId");
+
                     b.HasIndex("PatientId");
 
-                    b.ToTable("LabResults");
+                    b.ToTable("LabResultDescriptions");
                 });
 
             modelBuilder.Entity("Domain.Models.User", b =>
@@ -198,37 +218,25 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-<<<<<<<< HEAD:EhrSystem/Infrastructure/Migrations/20240329200842_InitialCreate.Designer.cs
-                            Id = new Guid("d6712e95-2ea2-4bb4-8618-beed98301ba1"),
-========
-                            Id = new Guid("d0788de0-fbe6-4dcc-86e8-bf41ddd2d874"),
->>>>>>>> ec0194a (Add lab results controller):EhrSystem/Infrastructure/Migrations/20240327202658_InitialCreate.Designer.cs
+                            Id = new Guid("08e46d4d-790a-4b87-98b4-87769a5b3950"),
                             Name = "User",
                             NormalizedName = "User"
                         },
                         new
                         {
-<<<<<<<< HEAD:EhrSystem/Infrastructure/Migrations/20240329200842_InitialCreate.Designer.cs
-                            Id = new Guid("64eed626-7ad3-4af1-bffa-1118b60ed549"),
-========
-                            Id = new Guid("2b74a16a-ee5b-44e1-a941-923d31f33ac9"),
->>>>>>>> ec0194a (Add lab results controller):EhrSystem/Infrastructure/Migrations/20240327202658_InitialCreate.Designer.cs
+                            Id = new Guid("f90d8268-41bb-4c5d-b4c0-1febe9266a8b"),
                             Name = "Doctor",
                             NormalizedName = "Doctor"
                         },
                         new
                         {
-<<<<<<<< HEAD:EhrSystem/Infrastructure/Migrations/20240329200842_InitialCreate.Designer.cs
-                            Id = new Guid("7a16cc6e-90a4-4050-9621-b38a8d400d33"),
+                            Id = new Guid("be28b826-9df1-47b6-8d2f-6ed0b61949d2"),
                             Name = "LabTechnician",
                             NormalizedName = "LabTechnician"
                         },
                         new
                         {
-                            Id = new Guid("b18a66c6-d904-4e6a-b20d-34ec31d8fe52"),
-========
-                            Id = new Guid("8d3b2da9-0a96-48de-8443-43d8fc33c3cd"),
->>>>>>>> ec0194a (Add lab results controller):EhrSystem/Infrastructure/Migrations/20240327202658_InitialCreate.Designer.cs
+                            Id = new Guid("522e1b2f-deb6-4b58-8501-98020c166905"),
                             Name = "Admin",
                             NormalizedName = "Admin"
                         });
@@ -356,13 +364,21 @@ namespace Infrastructure.Migrations
                     b.Navigation("Patient");
                 });
 
-            modelBuilder.Entity("Domain.Models.LabResult", b =>
+            modelBuilder.Entity("Domain.Models.LabResultDescription", b =>
                 {
+                    b.HasOne("Domain.Models.LabResult", "LabResult")
+                        .WithMany()
+                        .HasForeignKey("LabResultId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Domain.Models.User", "Patient")
                         .WithMany()
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("LabResult");
 
                     b.Navigation("Patient");
                 });

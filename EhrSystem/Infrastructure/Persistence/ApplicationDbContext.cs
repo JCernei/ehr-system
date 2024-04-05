@@ -11,6 +11,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 {
     public DbSet<Consultation> Consultations { get; set; }
     public DbSet<LabResult> LabResults { get; set; }
+    public DbSet<LabResultDescription> LabResultDescriptions { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -19,12 +20,16 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .HasKey(x => x.Id);
         modelBuilder.Entity<LabResult>()
             .HasKey(x => x.Id);
+        modelBuilder.Entity<LabResultDescription>()
+            .HasKey(x => x.Id);
 
         modelBuilder.Entity<Consultation>()
             .Property(e => e.TimeStamp);
         modelBuilder.Entity<LabResult>()
             .Property(e => e.TimeStamp);
-
+        modelBuilder.Entity<LabResultDescription>()
+            .Property(e => e.TimeStamp);
+        
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.ApplyConfiguration(new RoleConfiguration());

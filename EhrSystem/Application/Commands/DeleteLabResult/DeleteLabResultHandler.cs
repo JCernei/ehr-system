@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Application.Commands.DeleteLabResult;
 
-public class DeleteLabResultHandler : IRequestHandler<DeleteLabResultCommand>
+public class DeleteLabResultHandler : IRequestHandler<DeleteLabResultCommand, CommandStatus>
 {
     private readonly ApplicationDbContext dbContext;
 
@@ -23,6 +23,6 @@ public class DeleteLabResultHandler : IRequestHandler<DeleteLabResultCommand>
         dbContext.LabResults.Remove(labResult);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return CommandStatus;
+        return new CommandStatus();
     }
 }

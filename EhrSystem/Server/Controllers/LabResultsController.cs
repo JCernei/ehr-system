@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Application.Commands.CreateLabResult;
 using Application.Queries.GetLabResultById;
 using Application.Queries.GetLabResults;
@@ -55,10 +56,31 @@ public class LabResultsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<LabResultDto>> Create([FromBody] CreateLabResultCommand command)
+    public async Task<ActionResult<LabResultDto>> Create([FromForm] IEnumerable<IFormFile> files, LabResultDto labResultDto)
     {
-        var labResultDto = await mediator.Send(command);
-        return CreatedAtAction(nameof(GetById), new { id = labResultDto.Id }, labResultDto);
+        var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "userId");
+        
+        if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId))
+            return BadRequest("UserId invalid");
+        
+        var roles = User.Claims
+            .Where(c => c.Type == ClaimTypes.Role)
+            .Select(c => c.Value)
+            .ToList();
+        
+        if (!roles.Contains("LabTechnician"))
+            return BadRequest("User is not a lab technician");
+
+        var command = new CreateLabResultCommand
+        {
+            Files = files,
+            PatientId = labResultDto.PatientId,
+            LabTechnicianId = userId,
+            TestName = labResultDto.TestName,
+        };
+        
+        var result = await mediator.Send(command);
+        return result.IsSuccessful ? Ok() : BadRequest(result.Error);
     }
     
     // [HttpPut("{id}")]

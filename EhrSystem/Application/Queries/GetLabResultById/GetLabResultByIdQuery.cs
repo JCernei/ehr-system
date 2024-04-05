@@ -1,6 +1,5 @@
 using Domain.Models;
 using MediatR;
-using Shared;
 
 namespace Application.Queries.GetLabResultById;
 

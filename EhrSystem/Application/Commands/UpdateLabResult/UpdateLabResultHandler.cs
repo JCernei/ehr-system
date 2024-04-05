@@ -4,11 +4,11 @@ using MediatR;
 
 namespace Application.Commands.UpdateLabResult;
 
-public class UpdateLabResultHandler : IRequestHandler<UpdateLabResultCommand>
+public class UpdateLabResultHandler : IRequestHandler<UpdateLabResultCommand, CommandStatus>
 {
     private readonly ApplicationDbContext dbContext;
 
-    public UpdateLabResultHandler(ApplicationDbContext dbContext, IMapper mapper)
+    public UpdateLabResultHandler(ApplicationDbContext dbContext)
     {
         this.dbContext = dbContext;
     }
@@ -23,6 +23,6 @@ public class UpdateLabResultHandler : IRequestHandler<UpdateLabResultCommand>
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return new CommandStatus;
+        return new CommandStatus();
     }
 }
