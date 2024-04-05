@@ -13,4 +13,14 @@ public static class Mapper
             Description = source.Description
         };
     }
+    public static UserDto Map(User source)
+    {
+        return new UserDto
+        {
+            Id = source.Id.ToString(),
+            Idnp = source.Idnp,
+            FirstName = source.FirstName,
+            LastName = source.LastName,
+        };
+    }
 }

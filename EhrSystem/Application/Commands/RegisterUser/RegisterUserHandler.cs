@@ -1,4 +1,3 @@
-using Domain.Enums;
 using Domain.Models;
 using Infrastructure.Persistence;
 using MediatR;
@@ -27,8 +26,7 @@ public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, CommandS
         if (userExists)
             return CommandStatus.Failed("User already exists");
 
-        var userRole = await context.Users.AnyAsync(cancellationToken) ? UserRole.User : UserRole.Admin;
-
+        var roles = request.Roles;
         var user = new User
         {
             Id = Guid.NewGuid(),
@@ -38,13 +36,15 @@ public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, CommandS
             UserName = request.Idnp
         };
 
+
         var createResult = await userManager.CreateAsync(user, request.Password);
         if (!createResult.Succeeded)
             return CommandStatus.Failed("The user could not be created");
 
-        var roleResult = await userManager.AddToRoleAsync(user, userRole.ToString());
+        var roleResult = await userManager.AddToRolesAsync(user, roles);
         if (!roleResult.Succeeded)
             return CommandStatus.Failed("The user could not be registered");
+
 
         return new CommandStatus();
     }

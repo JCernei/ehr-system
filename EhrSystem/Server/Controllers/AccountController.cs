@@ -35,6 +35,7 @@ public class AccountController : ControllerBase
             FirstName = dto.FirstName,
             LastName = dto.LastName,
             Password = dto.Password,
+            Roles = dto.Roles
         };
 
         var result = await mediator.Send(registerCommand);
@@ -64,7 +65,7 @@ public class AccountController : ControllerBase
 
         var userDetails = await mediator.Send(userDetailsQuery);
 
-        var jwtToken = jwtService.CreateAuthToken(userDetails.Id, userDetails.Idnp, userDetails.Roles);
+        var jwtToken = jwtService.CreateAuthToken(userDetails.Id, userDetails.Roles);
 
         Response.Cookies.Append(Constants.TokenCookieName, jwtToken, new CookieOptions
         {

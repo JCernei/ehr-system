@@ -16,12 +16,11 @@ public class JwtService
         this.tokenSettings = tokenSettings;
     }
 
-    public string CreateAuthToken(string userId, string idnp, string[] roles)
+    public string CreateAuthToken(string userId, string[] roles)
     {
         List<Claim> claims = new()
         {
             new Claim(Constants.UserIdClaimName, userId),
-            new Claim(Constants.IdnpClaimName, idnp)
         };
 
         claims.AddRange(roles.Select(x => new Claim(ClaimTypes.Role, x)).ToList());
