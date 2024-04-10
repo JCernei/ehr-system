@@ -18,8 +18,8 @@ public static class Mapper
     {
         return new LabResultDto
         {
-            PatientId = source.PatientId,
-            LabTechnicianId = source.LabTechnicianId,
+            PatientId = source.PatientId.ToString(),
+            LabTechnicianId = source.LabTechnicianId.ToString(),
             TestName = source.TestName,
             FilePath = source.FilePath,
         };

@@ -1,4 +1,4 @@
-@page "/select-user"
+@page "/lab-workspace/select-user"
 @layout MainLayout
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
@@ -40,7 +40,7 @@
         }
 
         var user = users.FirstOrDefault(x => x.Idnp == UserIdnp);
-        NavigationManager?.NavigateTo($"{user.Id}/new-consultation/");
+        NavigationManager?.NavigateTo($"{user.Id}/new-lab-result/");
         return Task.CompletedTask;
     }
 

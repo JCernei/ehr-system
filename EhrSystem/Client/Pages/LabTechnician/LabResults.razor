@@ -1,23 +1,18 @@
-@page "/lab-results/upload"
+@page "/{PatientId}/new-lab-result/"
 @layout MainLayout
 @inject HttpClient HttpClient
 
-<PageTitle>Upload Lab Results</PageTitle>
-
-@using FluentValidation
 @using System.Net.Http.Headers
-@using System.Net
 @inject ISnackbar Snackbar
 
-<MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="@(() => Snackbar.Add("Simple Snackbar"))">
-    Open Snackbar
-</MudButton>
+<PageTitle>Upload Lab Results</PageTitle>
+
 <MudCard>
     <MudCardContent>
         <MudItem xs="12" sm="6" md="4">
             <MudAutocomplete T="string"
                              Label="Lab Name"
-                             @bind-Value="labResult.TestName"
+                             @bind-Value="TestName"
                              SearchFunc="@SearchLabNames"/>
         </MudItem>
         <MudFileUpload T="IReadOnlyList<IBrowserFile>"
@@ -65,8 +60,12 @@
 </MudCard>
 
 @code {
+    [Parameter] public string? PatientId { get; set; }
     private MudForm form;
+
+    private String TestName;
     private LabResultDto labResult = new();
+    private UserDto? user = new();
     
     private const string DefaultDragClass = "relative rounded-lg border-2 border-dashed pa-4 mt-4 mud-width-full mud-height-full z-10";
     private string dragClass = DefaultDragClass;
@@ -113,12 +112,15 @@
 
     private async Task Submit()
     {
-        // shouldRender = false;
         // long maxFileSize = 1024 * 100;
         var upload = false;
 
         using var content = new MultipartFormDataContent();
-
+        content.Add(new StringContent(PatientId), "PatientId");
+        content.Add(new StringContent("0"), "LabTechnicianId");
+        content.Add(new StringContent("/"), "FilePath");
+        content.Add(new StringContent(TestName), "TestName");
+            
         foreach (var file in files)
         {
             try

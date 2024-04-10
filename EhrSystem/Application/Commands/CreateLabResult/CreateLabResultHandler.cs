@@ -7,7 +7,7 @@ using Microsoft.Extensions.WebEncoders.Testing;
 
 namespace Application.Commands.CreateLabResult;
 
-public class CreateLabResultHandler : IRequestHandler<CreateLabResultCommand, LabResult>
+public class CreateLabResultHandler : IRequestHandler<CreateLabResultCommand, CommandStatus>
 {
     private readonly ApplicationDbContext dbContext;
     private readonly string fileStoragePath;
@@ -18,7 +18,7 @@ public class CreateLabResultHandler : IRequestHandler<CreateLabResultCommand, La
         fileStoragePath = Path.Combine(Directory.GetCurrentDirectory(), "UploadedFiles"); // Change this path as needed
     }
 
-    public async Task<LabResult> Handle(CreateLabResultCommand request, CancellationToken cancellationToken)
+    public async Task<CommandStatus> Handle(CreateLabResultCommand request, CancellationToken cancellationToken)
     {
         var labResult = new LabResult
         {
@@ -53,6 +53,6 @@ public class CreateLabResultHandler : IRequestHandler<CreateLabResultCommand, La
 
         dbContext.LabResults.Add(labResult);
         await dbContext.SaveChangesAsync(cancellationToken);
-        return labResult;
+        return new CommandStatus();
     }
 }

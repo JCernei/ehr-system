@@ -1,4 +1,4 @@
-@page "/lab-results"
+@page "/{PatientId}/lab-results"
 @layout MainLayout
 @inject HttpClient HttpClient
 
@@ -21,6 +21,7 @@
                 <MudCard>
                     <MudCardContent>
                         <MudText>Test Name: @labResult.TestName</MudText>
+                        <MudText>Test Name: @labResult.FilePath</MudText>
                         <!-- Add more details here as needed -->
                     </MudCardContent>
                 </MudCard>
@@ -31,6 +32,7 @@
 
 
 @code {
+    [Parameter] public string? PatientId { get; set; }
     private List<LabResultDto> labResults;
 
     protected override async Task OnInitializedAsync()
@@ -44,6 +46,6 @@
 
     public async Task GetLabResults()
     {
-        labResults = await HttpClient.GetFromJsonAsync<List<LabResultDto>>("api/lab-results");
+        labResults = await HttpClient.GetFromJsonAsync<List<LabResultDto>>($"http://localhost:5254/api/{PatientId}/lab-results");
     }
 }

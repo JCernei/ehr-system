@@ -27,9 +27,9 @@ public class LabResultsController : ControllerBase
     }
     
     [HttpGet]
-    public async Task<ActionResult<List<LabResultDto>>> GetAll()
+    [Route("/api/{userId}/lab-results")]
+    public async Task<List<LabResultDto>> GetAllByUserId(Guid userId)
     {
-        var userId = Guid.Parse("7e743b6e-e5ab-4a23-8138-9c0f3fe55049");
         var query = new GetLabResultsQuery
         {
             UserId = userId
@@ -41,27 +41,31 @@ public class LabResultsController : ControllerBase
     }
  
     [HttpGet("{id}")]
-    public async Task<ActionResult<LabResultDto>> GetById(Guid id)
+    public async Task<LabResultDto> GetById(Guid id)
     {
         var query = new GetLabResultByIdQuery { Id = id };
         var labResult = await mediator.Send(query);
         var labResultDto = Mapper.Map(labResult);
         
-        if (labResultDto == null)
-        {
-            return NotFound();
-        }
+        // if (labResultDto == null)
+        // {
+        //     return NotFound();
+        // }
 
         return labResultDto;
     }
 
     [HttpPost]
-    public async Task<ActionResult<LabResultDto>> Create([FromForm] IEnumerable<IFormFile> files, LabResultDto labResultDto)
+    public async Task<ActionResult<LabResultDto>> Create([FromForm] LabResultDto labResultDto)
     {
+        
         var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "userId");
         
         if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId))
             return BadRequest("UserId invalid");
+        
+        if (!Guid.TryParse(labResultDto.PatientId, out Guid patientId))
+            return BadRequest("LabTechnicianId invalid");
         
         var roles = User.Claims
             .Where(c => c.Type == ClaimTypes.Role)
@@ -73,8 +77,8 @@ public class LabResultsController : ControllerBase
 
         var command = new CreateLabResultCommand
         {
-            Files = files,
-            PatientId = labResultDto.PatientId,
+            Files = labResultDto.Files,
+            PatientId = patientId,
             LabTechnicianId = userId,
             TestName = labResultDto.TestName,
         };

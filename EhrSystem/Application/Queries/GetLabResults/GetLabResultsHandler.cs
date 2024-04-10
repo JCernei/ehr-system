@@ -20,7 +20,9 @@ public class GetLabResultsHandler : IRequestHandler<GetLabResultsQuery, List<Lab
     public async Task<List<LabResult>> Handle(GetLabResultsQuery request, CancellationToken cancellationToken)
     {
         var labResults = await dbContext.LabResults
-            .Where(x => x.Id == request.UserId)
+            // .Include(x => x.Patient)
+            // .Include(x => x.Doctor)
+            .Where(x => x.PatientId == request.UserId)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
         return labResults;
