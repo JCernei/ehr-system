@@ -1,4 +1,4 @@
-@page "/{UserId}/new-consultation/"
+@* @page "/{UserId}/new-consultation/" *@
 @layout MainLayout
 @inject HttpClient HttpClient
 @inject ISnackbar Snackbar;
@@ -6,10 +6,12 @@
 
 <MudSnackbarProvider/>
 
-<PageTitle>New Consultation</PageTitle>
+@* <PageTitle>New Consultation</PageTitle> *@
 
 <MudCard>
     <MudCardContent Class="justify-md-center ">
+        <MudText> @user.FirstName @user.LastName</MudText>
+
         <MudText> @user.FirstName @user.LastName</MudText>
         <MudText> @user.Idnp </MudText>
         <MudButton Variant="Variant.Filled"
@@ -37,18 +39,11 @@
                Class="ma-4">
         Create Consultation
     </MudButton>
-    <MudItem md="2">
-        @if (newConsultationError != string.Empty)
-        {
-            <MudAlert>@newConsultationError</MudAlert>
-        }
-    </MudItem>
 </MudCard>
 
 @code {
     [Parameter] public string? UserId { get; set; }
     private ConsultationDto newConsultation = new();
-    private string newConsultationError = string.Empty;
     private UserDto? user = new();
 
     public async Task CreateNewConsultation()

@@ -1,23 +1,23 @@
 @page "/select-user"
+@using Microsoft.AspNetCore.Authorization
 @layout MainLayout
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
+@attribute [Authorize(Roles = "Doctor")]
 
 <MudSnackbarProvider/>
 <PageTitle>New Consultation</PageTitle>
 <MudGrid>
-
     <MudItem xs="12" sm="6" md="4">
         <MudAutocomplete T="string"
                          Label="User IDNP"
                          @bind-Value="UserIdnp"
                          SearchFunc="@Search"
-                         Required="true"
-                         RequiredError="IDNP is required!"
                          AdornmentIcon="@Icons.Material.Filled.Search"
                          AdornmentColor="Color.Primary"/>
     </MudItem>
+
     <MudButton Variant="Variant.Filled"
                Color="Color.Primary"
                DisableElevation="true"
@@ -25,23 +25,83 @@
                Class="ma-4">
         Continue
     </MudButton>
+
+    @if (isUserSelected)
+    {
+        <MudItem xs="12">
+            <MudCard>
+                <MudCardContent Class="justify-md-center ">
+                    <MudText> @selectedUser.Id </MudText>
+
+                    <MudText> @selectedUser.FirstName @selectedUser.LastName</MudText>
+                    <MudText> @selectedUser.Idnp </MudText>
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Secondary"
+                               DisableElevation="true"
+                               OnClick="@ViewConsultations"
+                               Class="ma-4">
+                        View Other Consultations
+                    </MudButton>
+                    <MudText>
+                        @DateTime.Today.ToString("dd/MM/yyyy")
+                    </MudText>
+                    <MudTextField T="string"
+                                  Label="Description"
+                                  Required="true"
+                                  RequiredError="Description is required!"
+                                  @bind-Value="newConsultation.Description"
+                                  Variant="Variant.Outlined"
+                                  Lines="15"/>
+                </MudCardContent>
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Secondary"
+                           DisableElevation="true"
+                           OnClick="@CreateNewConsultation"
+                           Class="ma-4">
+                    Create Consultation
+                </MudButton>
+            </MudCard>
+        </MudItem>
+    }
 </MudGrid>
 
 @code {
     private string? UserIdnp { get; set; }
-    private List<UserDto>? users;
+    private List<UserDto>? users = new();
+    private UserDto? selectedUser = new();
 
-    public Task Continue()
+    private bool isUserSelected;
+    private ConsultationDto newConsultation = new();
+
+    private string userId = string.Empty;
+
+    public async Task CreateNewConsultation()
     {
-        if (UserIdnp is null)
+        newConsultation.PatientId = selectedUser.Id;
+
+        var result = await HttpClient.PostAsJsonAsync($"api/consultations/", newConsultation);
+        if (!result.IsSuccessStatusCode)
+            Snackbar.Add("Description is required!", Severity.Error);
+        else
         {
-           Snackbar.Add("IDNP is required!", Severity.Error);
-           return Task.CompletedTask;
+            isUserSelected = false;
+            Snackbar.Add("The consultation was sent successfully!", Severity.Success);
+        }
+    }
+
+    private async Task Continue()
+    {
+        selectedUser = users.FirstOrDefault(x => x.Idnp == UserIdnp);
+
+        if (selectedUser is null)
+        {
+            Snackbar.Add("User IDNP is required!", Severity.Error);
+            return;
         }
 
-        var user = users.FirstOrDefault(x => x.Idnp == UserIdnp);
-        NavigationManager?.NavigateTo($"{user.Id}/new-consultation/");
-        return Task.CompletedTask;
+        userId = selectedUser.Id;
+        isUserSelected = true;
+        StateHasChanged();
     }
 
     protected override async Task OnInitializedAsync()
@@ -53,12 +113,18 @@
         await base.OnInitializedAsync();
     }
 
+    public Task ViewConsultations()
+    {
+        NavigationManager?.NavigateTo($"{userId}/consultations/");
+        return Task.CompletedTask;
+    }
+
     private async Task<IEnumerable<string>> Search(string value)
     {
         var userIdnps = users.Select(x => x.Idnp).ToList();
         if (string.IsNullOrEmpty(value))
-            return userIdnps;
-        return userIdnps.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+            return new[] { "" };
+        return userIdnps.Where(x => x.StartsWith(value, StringComparison.InvariantCultureIgnoreCase));
     }
 
     public async Task GetUsers()

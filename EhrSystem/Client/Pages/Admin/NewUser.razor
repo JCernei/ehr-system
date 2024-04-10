@@ -1,7 +1,9 @@
 @page "/new-user"
+@using Microsoft.AspNetCore.Authorization
 @layout MainLayout
 @inject AuthService AuthService
 @inject NavigationManager NavigationManager
+@attribute [Authorize(Roles = "Admin")]
 
 <PageTitle>New User</PageTitle>
 
