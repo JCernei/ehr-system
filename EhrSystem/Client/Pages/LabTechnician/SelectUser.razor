@@ -1,0 +1,69 @@
+@page "/lab-workspace/select-user"
+@layout MainLayout
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+
+<MudSnackbarProvider/>
+<PageTitle>New Consultation</PageTitle>
+<MudGrid>
+
+    <MudItem xs="12" sm="6" md="4">
+        <MudAutocomplete T="string"
+                         Label="User IDNP"
+                         @bind-Value="UserIdnp"
+                         SearchFunc="@Search"
+                         Required="true"
+                         RequiredError="IDNP is required!"
+                         AdornmentIcon="@Icons.Material.Filled.Search"
+                         AdornmentColor="Color.Primary"/>
+    </MudItem>
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary"
+               DisableElevation="true"
+               OnClick="@Continue"
+               Class="ma-4">
+        Continue
+    </MudButton>
+</MudGrid>
+
+@code {
+    private string? UserIdnp { get; set; }
+    private List<UserDto>? users;
+
+    public Task Continue()
+    {
+        if (UserIdnp is null)
+        {
+            Snackbar.Add("IDNP is required!", Severity.Error);
+            return Task.CompletedTask;
+        }
+
+        var user = users.FirstOrDefault(x => x.Idnp == UserIdnp);
+        NavigationManager?.NavigateTo($"{user.Id}/new-lab-result/");
+        return Task.CompletedTask;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetUsers();
+
+        StateHasChanged();
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task<IEnumerable<string>> Search(string value)
+    {
+        var userIdnps = users.Select(x => x.Idnp).ToList();
+        if (string.IsNullOrEmpty(value))
+            return userIdnps;
+        return userIdnps.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    public async Task GetUsers()
+    {
+        users = await HttpClient.GetFromJsonAsync<List<UserDto>>("api/users");
+    }
+
+}

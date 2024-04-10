@@ -1,0 +1,43 @@
+@page "/{PatientId}/consultations/"
+@layout MainLayout
+@inject HttpClient HttpClient
+
+<PageTitle>Consultations</PageTitle>
+
+<MudGrid>
+    <MudItem md="12">
+        <MudText Typo="Typo.h4" GutterBottom="true">
+            Consultations
+        </MudText>
+    </MudItem>
+    <Virtualize Items="consultations" Context="consultation">
+        <MudItem md="3">
+            <MudCard>
+                <MudCardContent>
+                    <MudText>Details : @consultation.Description</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </Virtualize>
+</MudGrid>
+
+
+@code {
+    [Parameter] public string? PatientId { get; set; }
+    private List<ConsultationDto> consultations = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetConsultations();
+
+        StateHasChanged();
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task GetConsultations()
+    {
+        consultations = await HttpClient.GetFromJsonAsync<List<ConsultationDto>>($"api/{PatientId}/consultations");
+    }
+
+}

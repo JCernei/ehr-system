@@ -23,12 +23,12 @@ public class LoginUserHandler : IRequestHandler<LoginUserCommand, CommandStatus>
         var user = await userManager.FindByNameAsync(request.Idnp);
 
         if (user is null)
-            return CommandStatus.Failed("Nu exista un asemenea utilizator");
+            return CommandStatus.Failed("User does not exists");
 
         var passwordStatus = await signInManager.CheckPasswordSignInAsync(user, request.Password, false);
 
         if (!passwordStatus.Succeeded)
-            return CommandStatus.Failed("Parola introdusa este gresita");
+            return CommandStatus.Failed("Wrong password");
 
         return new CommandStatus();
     }

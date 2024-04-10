@@ -1,0 +1,71 @@
+@page "/new-user"
+@layout MainLayout
+@inject AuthService AuthService
+@inject NavigationManager NavigationManager
+
+<PageTitle>New User</PageTitle>
+
+<MudItem sm="5">
+    <MudCard>
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h5">Create User</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent Class="justify-md-center ">
+            <MudTextField @bind-Value="newUser.FirstName" T="string" Label="FirstName"/>
+            <MudTextField @bind-Value="newUser.LastName" T="string" Label="LastName"/>
+            <MudTextField @bind-Value="newUser.Idnp" T="string" Label="IDNP"/>
+            <MudTextField @bind-Value="newUser.Password" T="string" Label="Password" InputType="InputType.Password"/>
+            <MudSelect T="string" @bind-SelectedValues="options" MultiSelection="true">
+                <Virtualize Items="roles" Context="role">
+                    <MudSelectItem Value="@role">@role</MudSelectItem>
+                </Virtualize>
+            </MudSelect>
+            @* <MudListItem Text="Selected Roles" InitiallyExpanded="true"> *@
+            @*     <NestedList> *@
+            @*         @foreach (var option in options) *@
+            @*         { *@
+            @*             <MudListItem>@option</MudListItem> *@
+            @*         } *@
+            @*     </NestedList> *@
+            @* </MudListItem> *@
+        </MudCardContent>
+        <MudButton Variant="Variant.Filled" OnClick="@CreateNewUser" Color="Color.Secondary" DisableElevation="true" Class="ma-4">Create User</MudButton>
+    </MudCard>
+</MudItem>
+
+
+@code {
+    string[] roles = Enum.GetValues<UserRole>().Select(x => x.ToString()).ToArray();
+    private static IEnumerable<string> options { get; set; } = new HashSet<string> { "User" };
+
+    readonly RegisterDto newUser = new();
+    string registerError = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var isAuthenticated = await AuthService.IsUserAuthenticated();
+
+        if (!isAuthenticated)
+            NavigationManager.NavigateTo("");
+    }
+
+    public async Task CreateNewUser()
+    {
+        newUser.Roles = options.Select(x => x).ToArray();
+        var result = await AuthService.Register(newUser);
+
+        if (result.Status)
+            NavigationManager.NavigateTo("");
+
+        registerError = result.Message;
+        StateHasChanged();
+    }
+
+    private string GetMultiSelectionText(List<string> selectedValues)
+    {
+        return "User Roles";
+    }
+
+}

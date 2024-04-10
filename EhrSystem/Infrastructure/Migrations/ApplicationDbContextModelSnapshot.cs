@@ -50,6 +50,65 @@ namespace Infrastructure.Migrations
                     b.ToTable("Consultations");
                 });
 
+            modelBuilder.Entity("Domain.Models.LabResult", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid>("LabTechnicianId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("PatientId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("TestName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("TimeStamp")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LabResults");
+                });
+
+            modelBuilder.Entity("Domain.Models.LabResultDescription", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid>("DoctorId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("LabResultId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("PatientId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("TimeStamp")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LabResultId");
+
+                    b.HasIndex("PatientId");
+
+                    b.ToTable("LabResultDescriptions");
+                });
+
             modelBuilder.Entity("Domain.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -156,25 +215,25 @@ namespace Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("d6712e95-2ea2-4bb4-8618-beed98301ba1"),
+                            Id = new Guid("08e46d4d-790a-4b87-98b4-87769a5b3950"),
                             Name = "User",
                             NormalizedName = "User"
                         },
                         new
                         {
-                            Id = new Guid("64eed626-7ad3-4af1-bffa-1118b60ed549"),
+                            Id = new Guid("f90d8268-41bb-4c5d-b4c0-1febe9266a8b"),
                             Name = "Doctor",
                             NormalizedName = "Doctor"
                         },
                         new
                         {
-                            Id = new Guid("7a16cc6e-90a4-4050-9621-b38a8d400d33"),
+                            Id = new Guid("be28b826-9df1-47b6-8d2f-6ed0b61949d2"),
                             Name = "LabTechnician",
                             NormalizedName = "LabTechnician"
                         },
                         new
                         {
-                            Id = new Guid("b18a66c6-d904-4e6a-b20d-34ec31d8fe52"),
+                            Id = new Guid("522e1b2f-deb6-4b58-8501-98020c166905"),
                             Name = "Admin",
                             NormalizedName = "Admin"
                         });
@@ -298,6 +357,25 @@ namespace Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Doctor");
+
+                    b.Navigation("Patient");
+                });
+
+            modelBuilder.Entity("Domain.Models.LabResultDescription", b =>
+                {
+                    b.HasOne("Domain.Models.LabResult", "LabResult")
+                        .WithMany()
+                        .HasForeignKey("LabResultId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Models.User", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LabResult");
 
                     b.Navigation("Patient");
                 });

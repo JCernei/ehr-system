@@ -76,6 +76,25 @@ namespace Infrastructure.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "LabResults",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    PatientId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    LabTechnicianId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    TestName = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    FilePath = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    TimeStamp = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LabResults", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -225,15 +244,45 @@ namespace Infrastructure.Migrations
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
+            migrationBuilder.CreateTable(
+                name: "LabResultDescriptions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    PatientId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    LabResultId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    DoctorId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Description = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    TimeStamp = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LabResultDescriptions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LabResultDescriptions_AspNetUsers_PatientId",
+                        column: x => x.PatientId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_LabResultDescriptions_LabResults_LabResultId",
+                        column: x => x.LabResultId,
+                        principalTable: "LabResults",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { new Guid("64eed626-7ad3-4af1-bffa-1118b60ed549"), null, "Doctor", "Doctor" },
-                    { new Guid("7a16cc6e-90a4-4050-9621-b38a8d400d33"), null, "LabTechnician", "LabTechnician" },
-                    { new Guid("b18a66c6-d904-4e6a-b20d-34ec31d8fe52"), null, "Admin", "Admin" },
-                    { new Guid("d6712e95-2ea2-4bb4-8618-beed98301ba1"), null, "User", "User" }
+                    { new Guid("08e46d4d-790a-4b87-98b4-87769a5b3950"), null, "User", "User" },
+                    { new Guid("522e1b2f-deb6-4b58-8501-98020c166905"), null, "Admin", "Admin" },
+                    { new Guid("be28b826-9df1-47b6-8d2f-6ed0b61949d2"), null, "LabTechnician", "LabTechnician" },
+                    { new Guid("f90d8268-41bb-4c5d-b4c0-1febe9266a8b"), null, "Doctor", "Doctor" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -282,6 +331,16 @@ namespace Infrastructure.Migrations
                 name: "IX_Consultations_PatientId",
                 table: "Consultations",
                 column: "PatientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LabResultDescriptions_LabResultId",
+                table: "LabResultDescriptions",
+                column: "LabResultId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LabResultDescriptions_PatientId",
+                table: "LabResultDescriptions",
+                column: "PatientId");
         }
 
         /// <inheritdoc />
@@ -306,10 +365,16 @@ namespace Infrastructure.Migrations
                 name: "Consultations");
 
             migrationBuilder.DropTable(
+                name: "LabResultDescriptions");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "LabResults");
         }
     }
 }

@@ -1,0 +1,85 @@
+@page "/{UserId}/new-consultation/"
+@layout MainLayout
+@inject HttpClient HttpClient
+@inject ISnackbar Snackbar;
+@inject NavigationManager NavigationManager
+
+<MudSnackbarProvider/>
+
+<PageTitle>New Consultation</PageTitle>
+
+<MudCard>
+    <MudCardContent Class="justify-md-center ">
+        <MudText> @user.FirstName @user.LastName</MudText>
+        <MudText> @user.Idnp </MudText>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Secondary"
+                   DisableElevation="true"
+                   OnClick="@ViewConsultations"
+                   Class="ma-4">
+            View Other Consultations
+        </MudButton>
+        <MudText>
+            @DateTime.Today.ToString("dd/MM/yyyy")
+        </MudText>
+        <MudTextField T="string"
+                      Label="Description"
+                      Required="true"
+                      RequiredError="Description is required!"
+                      @bind-Value="newConsultation.Description"
+                      Variant="Variant.Outlined"
+                      Lines="15"/>
+    </MudCardContent>
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Secondary"
+               DisableElevation="true"
+               OnClick="@CreateNewConsultation"
+               Class="ma-4">
+        Create Consultation
+    </MudButton>
+    <MudItem md="2">
+        @if (newConsultationError != string.Empty)
+        {
+            <MudAlert>@newConsultationError</MudAlert>
+        }
+    </MudItem>
+</MudCard>
+
+@code {
+    [Parameter] public string? UserId { get; set; }
+    private ConsultationDto newConsultation = new();
+    private string newConsultationError = string.Empty;
+    private UserDto? user = new();
+
+    public async Task CreateNewConsultation()
+    {
+        newConsultation.PatientId = user.Id;
+
+        var result = await HttpClient.PostAsJsonAsync($"api/consultations/", newConsultation);
+        if (!result.IsSuccessStatusCode)
+            Snackbar.Add("Description is required!", Severity.Error);
+
+        StateHasChanged();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetUser();
+
+        StateHasChanged();
+
+        await base.OnInitializedAsync();
+    }
+
+    public Task ViewConsultations()
+    {
+        NavigationManager?.NavigateTo($"{user.Id}/consultations/");
+        return Task.CompletedTask;
+    }
+
+    public async Task GetUser()
+    {
+        user = await HttpClient.GetFromJsonAsync<UserDto>($"api/users/{UserId}");
+    }
+
+}

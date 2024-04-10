@@ -11,11 +11,11 @@
         <MudButton Href="/" OnClick="@Logout" Variant="Variant.Filled" DisableElevation="true" Color="Color.Secondary" Class="mr-4">Logout</MudButton>
     </MudAppBar>
     <MudDrawer @bind-Open="drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
-        <AuthorizeView Roles="User">
+        <AuthorizeView>
             <UserNavMenu/>
         </AuthorizeView>
         <AuthorizeView Roles="Doctor">
-            <UserNavMenu/>
+            <DoctorNavMenu/>
         </AuthorizeView>
         <AuthorizeView Roles="Admin">
             <AdminNavMenu/>

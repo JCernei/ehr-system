@@ -7,4 +7,5 @@ public class RegisterDto
     public string LastName { get; set; }
     public string Idnp { get; set; }
     public string Password { get; set; }
+    public string[] Roles { get; set; }
 }
