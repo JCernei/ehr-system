@@ -19,19 +19,11 @@
             <MudTextField @bind-Value="newUser.LastName" T="string" Label="LastName"/>
             <MudTextField @bind-Value="newUser.Idnp" T="string" Label="IDNP"/>
             <MudTextField @bind-Value="newUser.Password" T="string" Label="Password" InputType="InputType.Password"/>
-            <MudSelect T="string" @bind-SelectedValues="options" MultiSelection="true">
+            <MudSelect T="string" @bind-SelectedValues="options" MultiSelection="true" Label="Roles">
                 <Virtualize Items="roles" Context="role">
                     <MudSelectItem Value="@role">@role</MudSelectItem>
                 </Virtualize>
             </MudSelect>
-            @* <MudListItem Text="Selected Roles" InitiallyExpanded="true"> *@
-            @*     <NestedList> *@
-            @*         @foreach (var option in options) *@
-            @*         { *@
-            @*             <MudListItem>@option</MudListItem> *@
-            @*         } *@
-            @*     </NestedList> *@
-            @* </MudListItem> *@
         </MudCardContent>
         <MudButton Variant="Variant.Filled" OnClick="@CreateNewUser" Color="Color.Secondary" DisableElevation="true" Class="ma-4">Create User</MudButton>
     </MudCard>

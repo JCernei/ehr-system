@@ -10,9 +10,9 @@
         <MudButton Href="/" Variant="Variant.Text" Style=@($"color:{Theme.PaletteDark.White}") Class="ml-4">Home</MudButton>
         <AuthorizeView>
             <Authorized>
-                <MudButton Href="/user-panel" Variant="Variant.Text" Style=@($"color:{Theme.PaletteDark.White}") Class="ml-4">User Panel</MudButton>
+                <MudButton Href="/consultations" Variant="Variant.Text" Style=@($"color:{Theme.PaletteDark.White}") Class="ml-4">User Panel</MudButton>
                 <MudSpacer/>
-                <MudButton Href="/" OnClick="@Logout" Variant="Variant.Filled" DisableElevation="true" Color="Color.Secondary" Class="mr-4">Logout</MudButton>
+                <MudButton Href="/" OnClick="@Logout" Variant="Variant.Filled" DisableElevation="true" Color="Color.Secondary" Class="mr-4">Log Out</MudButton>
             </Authorized>
             <NotAuthorized>
                 <MudSpacer/>
@@ -24,9 +24,6 @@
     <MudMainContent>
         <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="my-8">
             @Body
-            <MudScrollToTop>
-                <MudFab Color="Color.Tertiary" StartIcon="@Icons.Material.Filled.ArrowCircleUp"/>
-            </MudScrollToTop>
         </MudContainer>
     </MudMainContent>
 </MudLayout>

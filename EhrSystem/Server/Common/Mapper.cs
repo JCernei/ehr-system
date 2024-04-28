@@ -9,8 +9,10 @@ public static class Mapper
     {
         return new ConsultationDto
         {
+            DoctorId = source.DoctorId.ToString(),
             PatientId = source.Patient.Id.ToString(),
-            Description = source.Description
+            Description = source.Description,
+            TimeStamp = source.TimeStamp
         };
     }
 
