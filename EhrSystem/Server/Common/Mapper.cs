@@ -9,11 +9,13 @@ public static class Mapper
     {
         return new ConsultationDto
         {
+            DoctorId = source.DoctorId.ToString(),
             PatientId = source.Patient.Id.ToString(),
-            Description = source.Description
+            Description = source.Description,
+            TimeStamp = source.TimeStamp
         };
     }
-    
+
     public static LabResultDto Map(LabResult source)
     {
         return new LabResultDto
@@ -24,6 +26,7 @@ public static class Mapper
             FilePath = source.FilePath,
         };
     }
+
     public static LabResultDescriptionDto Map(LabResultDescription source)
     {
         return new LabResultDescriptionDto()
@@ -34,6 +37,7 @@ public static class Mapper
             Description = source.Description,
         };
     }
+
     public static UserDto Map(User source)
     {
         return new UserDto

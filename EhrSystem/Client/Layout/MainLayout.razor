@@ -2,13 +2,14 @@
 @inject AuthService AuthService
 
 <MudThemeProvider/>
+<MudSnackbarProvider/>
 
 <MudLayout>
     <MudAppBar Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@DrawerToggle"/>
         <MudButton Href="/" Variant="Variant.Text" Style=@($"color:{Theme.PaletteDark.White}") Class="ml-4">Home</MudButton>
         <MudSpacer/>
-        <MudButton Href="/" OnClick="@Logout" Variant="Variant.Filled" DisableElevation="true" Color="Color.Secondary" Class="mr-4">Logout</MudButton>
+        <MudButton Href="/" OnClick="@Logout" Variant="Variant.Filled" DisableElevation="true" Color="Color.Secondary" Class="mr-4">Log Out</MudButton>
     </MudAppBar>
     <MudDrawer @bind-Open="drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <AuthorizeView>
@@ -17,12 +18,15 @@
         <AuthorizeView Roles="Doctor">
             <DoctorNavMenu/>
         </AuthorizeView>
+        <AuthorizeView Roles="LabTechnician">
+            <LabTechnicianNavMenu/>
+        </AuthorizeView>
         <AuthorizeView Roles="Admin">
             <AdminNavMenu/>
         </AuthorizeView>
     </MudDrawer>
     <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="my-8">
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="my-10 px-16">
             @Body
         </MudContainer>
     </MudMainContent>
