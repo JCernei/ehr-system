@@ -1,0 +1,53 @@
+@page "/lab-results"
+@layout MainLayout
+@inject HttpClient HttpClient
+
+<PageTitle>Lab Results</PageTitle>
+
+<MudGrid>
+    <MudItem md="12">
+        <MudText Typo="Typo.h4" GutterBottom="true">Lab Results</MudText>
+    </MudItem>
+    @if (labResults is null || !labResults.Any())
+    {
+        <MudItem md="12">
+            <MudAlert Severity="Severity.Info">At the moment you do not have any lab results.</MudAlert>
+        </MudItem>
+    }
+    else
+    {
+        <Virtualize Items="labResults" Context="labResult">
+            <MudLink Href='@String.Format($"http://localhost:5254/lab-results/{labResult.Id}")'>
+                <MudItem md="12">
+                        <MudCard>
+                            <MudCardContent>
+                                <MudText>Test Name: @labResult.TestName</MudText>
+                                <MudText>Date: @labResult.TimeStamp.ToString("dd/mm/yyyy")</MudText>
+                                <!-- Add more details here as needed -->
+                            </MudCardContent>
+                        </MudCard>
+                </MudItem>
+            </MudLink>
+        </Virtualize>
+    }
+</MudGrid>
+
+
+@code {
+    // [Parameter] public string? PatientId { get; set; }
+    private List<LabResultResponseDto> labResults;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetLabResults();
+
+        StateHasChanged();
+
+        await base.OnInitializedAsync();
+    }
+
+    public async Task GetLabResults()
+    {
+        labResults = await HttpClient.GetFromJsonAsync<List<LabResultResponseDto>>($"http://localhost:5254/api/lab-results");
+    }
+}

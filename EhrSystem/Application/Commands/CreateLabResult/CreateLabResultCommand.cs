@@ -6,9 +6,10 @@ namespace Application.Commands.CreateLabResult;
 
 public class CreateLabResultCommand : IRequest<CommandStatus>
 {
-    public IEnumerable<IFormFile> Files { get; set; }
+    public IEnumerable<Stream> Files { get; set; }
+    public List<string> FileNames { get; set; }
     public Guid PatientId { get; set; }
     public Guid LabTechnicianId { get; set; }
     public string TestName { get; set; }
-    public string FilePath { get; set; }
+    // public List<string> FilePaths { get; set; }
 }

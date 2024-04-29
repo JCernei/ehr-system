@@ -5,5 +5,6 @@ namespace Application.Queries.GetLabResultById;
 
 public class GetLabResultByIdQuery : IRequest<LabResult>
 {
-    public Guid Id { get; set; }
+    public Guid PatientId { get; set; }
+    public Guid LabResultId { get; set; }
 }

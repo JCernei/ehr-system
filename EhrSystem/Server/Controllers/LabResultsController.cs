@@ -1,8 +1,8 @@
 using System.Security.Claims;
 using Application.Commands.CreateLabResult;
+using Application.Queries.GetFiles;
 using Application.Queries.GetLabResultById;
 using Application.Queries.GetLabResults;
-using Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Server.Common;
@@ -27,9 +27,13 @@ public class LabResultsController : ControllerBase
     }
     
     [HttpGet]
-    [Route("/api/{userId}/lab-results")]
-    public async Task<List<LabResultDto>> GetAllByUserId(Guid userId)
+    [Route("/api/lab-results")]
+    public async Task<List<LabResultResponseDto>> GetAllByUserId()
     {
+        var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "userId");
+        if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId))
+            throw new InvalidOperationException("UserId invalid");
+        
         var query = new GetLabResultsQuery
         {
             UserId = userId
@@ -39,33 +43,148 @@ public class LabResultsController : ControllerBase
         logger.LogInformation("Lab results retrieved: {LabResults}", labResultsDtos);
         return labResultsDtos;
     }
- 
-    [HttpGet("{id}")]
-    public async Task<LabResultDto> GetById(Guid id)
+    
+    [HttpGet]
+    [Route("/api/{patientId}/lab-results")]
+    public async Task<List<LabResultResponseDto>> GetAllByPatientId(Guid patientId)
     {
-        var query = new GetLabResultByIdQuery { Id = id };
-        var labResult = await mediator.Send(query);
-        var labResultDto = Mapper.Map(labResult);
+        // var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "userId");
+        // if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId))
+        //     throw new InvalidOperationException("UserId invalid");
         
-        // if (labResultDto == null)
-        // {
-        //     return NotFound();
-        // }
-
+        // if (!Guid.TryParse(patientId, out Guid patientId))
+        //     throw new InvalidOperationException("PatientId invalid");
+        
+        var roles = User.Claims
+            .Where(c => c.Type == ClaimTypes.Role)
+            .Select(c => c.Value)
+            .ToList();
+        
+        if (!roles.Contains("Doctor"))
+            throw new InvalidOperationException("User is not a Doctor");
+        
+        var query = new GetLabResultsQuery()
+        {
+            UserId = patientId
+        };
+        
+        var labResults = await mediator.Send(query);
+        var labResultsDtos = labResults.Select(Mapper.Map).ToList();
+        logger.LogInformation("Lab results retrieved: {LabResults}", labResultsDtos);
+        return labResultsDtos;
+    }
+    
+    [HttpGet("/api/{patientId}/lab-results/{labResultId}")]
+    public async Task<LabResultResponseDto> GetById(Guid patientId, Guid labResultId)
+    {
+        // if (!Guid.TryParse(id, out Guid patientId))
+        //     throw new InvalidOperationException("PatientId invalid");
+        
+        var roles = User.Claims
+            .Where(c => c.Type == ClaimTypes.Role)
+            .Select(c => c.Value)
+            .ToList();
+        
+        // if (!roles.Contains("Doctor"))
+        //     throw new InvalidOperationException("User is not a Doctor");
+        
+        var labResultQuery = new GetLabResultByIdQuery
+        {
+            PatientId = patientId,
+            LabResultId = labResultId
+        };
+        
+        var labResult = await mediator.Send(labResultQuery);
+        
+        var labResultDto = Mapper.Map(labResult);
         return labResultDto;
+    }
+    
+    [HttpGet("/api/lab-results/{labResultId}")]
+    public async Task<LabResultResponseDto> GetById(Guid labResultId)
+    {
+        var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "userId");
+        if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId))
+            throw new InvalidOperationException("UserId invalid");
+        
+        var labResultQuery = new GetLabResultByIdQuery
+        {
+            PatientId = userId,
+            LabResultId = labResultId
+        };
+        
+        var labResult = await mediator.Send(labResultQuery);
+        
+        var labResultDto = Mapper.Map(labResult);
+        return labResultDto;
+    }
+    
+    [HttpGet("/api/{patientId}/lab-results/{labResultId}/download")]
+    public async Task<IActionResult> GetFiles(Guid patientId, Guid labResultId)
+    {
+        // if (!Guid.TryParse(id, out Guid patientId))
+        //     throw new InvalidOperationException("PatientId invalid");
+        
+        var roles = User.Claims
+            .Where(c => c.Type == ClaimTypes.Role)
+            .Select(c => c.Value)
+            .ToList();
+        
+        if (!roles.Contains("Doctor"))
+            throw new InvalidOperationException("User is not a Doctor");
+        
+        var labResultQuery = new GetLabResultByIdQuery
+        {
+            PatientId = patientId,
+            LabResultId = labResultId
+        };
+        
+        var labResult = await mediator.Send(labResultQuery);
+        
+        var filesQuery = new GetFilesQuery
+        {
+            FilePaths = labResult.FilePaths
+        };
+        
+        var files = await mediator.Send(filesQuery);
+        
+        return File(files[0], "application/octet-stream");
+    }
+    
+    [HttpGet("/api/lab-results/{labResultId}/download")]
+    public async Task<IActionResult> GetFiles(Guid labResultId)
+    {
+        var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "userId");
+        if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId))
+            throw new InvalidOperationException("UserId invalid");
+        
+        var labResultQuery = new GetLabResultByIdQuery
+        {
+            PatientId = userId,
+            LabResultId = labResultId
+        };
+        
+        var labResult = await mediator.Send(labResultQuery);
+        
+        var filesQuery = new GetFilesQuery
+        {
+            FilePaths = labResult.FilePaths
+        };
+        
+        var files = await mediator.Send(filesQuery);
+        
+        return File(files[0], "application/octet-stream");
     }
 
     [HttpPost]
-    public async Task<ActionResult<LabResultDto>> Create([FromForm] LabResultDto labResultDto)
+    public async Task<ActionResult<LabResultRequestDto>> Create([FromForm] LabResultRequestDto labResultDto)
     {
-        
         var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "userId");
-        
         if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId))
             return BadRequest("UserId invalid");
         
         if (!Guid.TryParse(labResultDto.PatientId, out Guid patientId))
-            return BadRequest("LabTechnicianId invalid");
+            return BadRequest("PatientId invalid");
         
         var roles = User.Claims
             .Where(c => c.Type == ClaimTypes.Role)
@@ -77,10 +196,11 @@ public class LabResultsController : ControllerBase
 
         var command = new CreateLabResultCommand
         {
-            Files = labResultDto.Files,
+            Files = labResultDto.Files.Select(x => x.OpenReadStream()),
             PatientId = patientId,
             LabTechnicianId = userId,
             TestName = labResultDto.TestName,
+            FileNames = labResultDto.Files.Select(x => x.FileName).ToList(),
         };
         
         var result = await mediator.Send(command);

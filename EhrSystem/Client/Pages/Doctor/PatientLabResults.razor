@@ -17,15 +17,17 @@
     else
     {
         <Virtualize Items="labResults" Context="labResult">
-            <MudItem md="3">
-                <MudCard>
-                    <MudCardContent>
-                        <MudText>Test Name: @labResult.TestName</MudText>
-                        <MudText>Test Name: @labResult.FilePath</MudText>
-                        <!-- Add more details here as needed -->
-                    </MudCardContent>
-                </MudCard>
-            </MudItem>
+            <MudLink Href='@String.Format($"http://localhost:5254/{PatientId}/lab-results/{labResult.Id}")'>
+                <MudItem md="12">
+                    <MudCard>
+                        <MudCardContent>
+                            <MudText>Test Name: @labResult.TestName</MudText>
+                            <MudText>Date: @labResult.TimeStamp</MudText>
+                            <!-- Add more details here as needed -->
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            </MudLink>
         </Virtualize>
     }
 </MudGrid>
@@ -33,8 +35,8 @@
 
 @code {
     [Parameter] public string? PatientId { get; set; }
-    private List<LabResultDto> labResults;
-
+    private List<LabResultResponseDto> labResults = new();
+    
     protected override async Task OnInitializedAsync()
     {
         await GetLabResults();
@@ -46,6 +48,6 @@
 
     public async Task GetLabResults()
     {
-        labResults = await HttpClient.GetFromJsonAsync<List<LabResultDto>>($"http://localhost:5254/api/{PatientId}/lab-results");
+        labResults = await HttpClient.GetFromJsonAsync<List<LabResultResponseDto>>($"api/{PatientId}/lab-results");
     }
 }

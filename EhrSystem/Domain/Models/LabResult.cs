@@ -7,5 +7,5 @@ public class LabResult : BaseEntity
     public Guid PatientId { get; set; }
     public Guid LabTechnicianId { get; set; }
     public string TestName { get; set; }
-    public string FilePath { get; set; }
+    public List<string> FilePaths { get; set; }
 }

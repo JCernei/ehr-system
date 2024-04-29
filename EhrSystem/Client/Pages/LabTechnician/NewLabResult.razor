@@ -61,11 +61,11 @@
 
 @code {
     [Parameter] public string? PatientId { get; set; }
-    private MudForm form;
+    // private MudForm form;
 
     private String TestName;
-    private LabResultDto labResult = new();
-    private UserDto? user = new();
+    // private LabResultDto labResult = new();
+    // private UserDto? user = new();
     
     private const string DefaultDragClass = "relative rounded-lg border-2 border-dashed pa-4 mt-4 mud-width-full mud-height-full z-10";
     private string dragClass = DefaultDragClass;
@@ -117,8 +117,8 @@
 
         using var content = new MultipartFormDataContent();
         content.Add(new StringContent(PatientId), "PatientId");
-        content.Add(new StringContent("0"), "LabTechnicianId");
-        content.Add(new StringContent("/"), "FilePath");
+        // content.Add(new StringContent("0"), "LabTechnicianId");
+        // content.Add(new StringContent("/"), "FilePath");
         content.Add(new StringContent(TestName), "TestName");
             
         foreach (var file in files)

@@ -15,7 +15,7 @@ public class CreateLabResultHandler : IRequestHandler<CreateLabResultCommand, Co
     public CreateLabResultHandler(ApplicationDbContext dbContext)
     {
         this.dbContext = dbContext;
-        fileStoragePath = Path.Combine(Directory.GetCurrentDirectory(), "UploadedFiles"); // Change this path as needed
+        fileStoragePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "UploadedFiles");
     }
 
     public async Task<CommandStatus> Handle(CreateLabResultCommand request, CancellationToken cancellationToken)
@@ -25,29 +25,35 @@ public class CreateLabResultHandler : IRequestHandler<CreateLabResultCommand, Co
             PatientId = request.PatientId,
             LabTechnicianId = request.LabTechnicianId,
             TestName = request.TestName,
-            FilePath = "",
+            FilePaths = new()
         };
 
-        // Access files from the request directly
-        var files = request.Files;
+        // Ensure both Files and FileNames have the same number of elements
+        if (request.Files.Count() != request.FileNames.Count())
+        {
+            throw new ArgumentException("Number of files and filenames must match");
+        }
 
         // Create the directory if it doesn't exist
         Directory.CreateDirectory(fileStoragePath);
 
-        // Handle file upload logic here
-        foreach (var file in files)
+        // Combine file streams with their corresponding names
+        var fileInfoList = request.Files.Zip(request.FileNames, (file, fileName) => new { Stream = file, FileName = fileName });
+
+        foreach (var fileInfo in fileInfoList)
         {
-            if (file.Length > 0)
+            if (fileInfo.Stream.Length > 0)
             {
-                var filePath = Path.Combine(fileStoragePath, Guid.NewGuid().ToString() + Path.GetExtension(file.FileName));
+                var filePath = Path.Combine(fileStoragePath, Guid.NewGuid().ToString() + Path.GetExtension(fileInfo.FileName));
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
-                    await file.CopyToAsync(stream, cancellationToken);
+                    await fileInfo.Stream.CopyToAsync(stream, cancellationToken);
                 }
 
-                // Update labResult with the file path or any other relevant information
-                labResult.FilePath = filePath;
+                // You can store the filename along with the path or use it for further processing
+                labResult.FilePaths.Add(filePath);
+                
             }
         }
 
