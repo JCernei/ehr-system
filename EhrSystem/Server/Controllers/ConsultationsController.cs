@@ -24,7 +24,7 @@ public class ConsultationsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<List<ConsultationDto>> GetAll()
+    public async Task<List<ConsultationResponseDto>> GetAll()
     {
         var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "userId");
         if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId))
@@ -43,7 +43,7 @@ public class ConsultationsController : ControllerBase
 
     [HttpGet]
     [Route("/api/{userId}/consultations")]
-    public async Task<List<ConsultationDto>> GetAllByUserId(Guid userId)
+    public async Task<List<ConsultationResponseDto>> GetAllByUserId(Guid userId)
     {
         logger.LogWarning("AICI");
         var query = new GetConsultationsByUserIdQuery
@@ -57,7 +57,7 @@ public class ConsultationsController : ControllerBase
 
 
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] ConsultationDto consultationDto)
+    public async Task<IActionResult> Post([FromBody] ConsultationRequestDto consultationDto)
     {
         var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "userId");
         if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId))

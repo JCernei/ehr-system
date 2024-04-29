@@ -19,7 +19,7 @@
         <MudItem md="12">
             <MudDataGrid Items="@consultations" ReadOnly="true">
                 <Columns>
-                    <HierarchyColumn T="ConsultationDto"/>
+                    <HierarchyColumn T="ConsultationResponseDto"/>
                     <PropertyColumn Property="x => x.PatientId" Title="Patient"/>
                     <PropertyColumn Property="x => x.TimeStamp" Title="Time"/>
                     <PropertyColumn Property="x => x.DoctorId" Title="Doctor"/>
@@ -29,7 +29,7 @@
                                   Text=@context.Item.Description/>
                 </ChildRowContent>
                 <PagerContent>
-                    <MudDataGridPager T="ConsultationDto"/>
+                    <MudDataGridPager T="ConsultationResponseDto"/>
                 </PagerContent>
             </MudDataGrid>
         </MudItem>
@@ -38,7 +38,7 @@
 
 
 @code {
-    private List<ConsultationDto> consultations = new();
+    private List<ConsultationResponseDto> consultations = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -51,7 +51,7 @@
 
     public async Task GetConsultations()
     {
-        consultations = await HttpClient.GetFromJsonAsync<List<ConsultationDto>>("api/consultations");
+        consultations = await HttpClient.GetFromJsonAsync<List<ConsultationResponseDto>>("api/consultations");
     }
 
 }

@@ -5,9 +5,9 @@ namespace Server.Common;
 
 public static class Mapper
 {
-    public static ConsultationDto Map(Consultation source)
+    public static ConsultationResponseDto Map(Consultation source)
     {
-        return new ConsultationDto
+        return new ConsultationResponseDto
         {
             DoctorId = source.DoctorId.ToString(),
             PatientId = source.Patient.Id.ToString(),
