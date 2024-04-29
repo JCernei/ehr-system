@@ -33,7 +33,7 @@
 @code {
     [Parameter] public string? PatientId { get; set; }
     [Parameter] public string? LabResultId { get; set; }
-    private LabResultDto? labResultDetails;
+    private LabResultResponseDto? labResultDetails;
     
     protected override async Task OnInitializedAsync()
     {
@@ -46,6 +46,6 @@
 
     private async Task GetLabResultDetails()
     {
-        labResultDetails = await HttpClient.GetFromJsonAsync<LabResultDto>($"http://localhost:5254/api/{PatientId}/lab-results/{LabResultId}");
+        labResultDetails = await HttpClient.GetFromJsonAsync<LabResultResponseDto>($"http://localhost:5254/api/{PatientId}/lab-results/{LabResultId}");
     }
 }

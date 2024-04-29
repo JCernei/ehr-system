@@ -28,7 +28,7 @@ public class LabResultsController : ControllerBase
     
     [HttpGet]
     [Route("/api/lab-results")]
-    public async Task<List<LabResultDto>> GetAllByUserId()
+    public async Task<List<LabResultResponseDto>> GetAllByUserId()
     {
         var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "userId");
         if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId))
@@ -46,7 +46,7 @@ public class LabResultsController : ControllerBase
     
     [HttpGet]
     [Route("/api/{patientId}/lab-results")]
-    public async Task<List<LabResultDto>> GetAllByPatientId(Guid patientId)
+    public async Task<List<LabResultResponseDto>> GetAllByPatientId(Guid patientId)
     {
         // var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "userId");
         // if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId))
@@ -75,7 +75,7 @@ public class LabResultsController : ControllerBase
     }
     
     [HttpGet("/api/{patientId}/lab-results/{labResultId}")]
-    public async Task<LabResultDto> GetById(Guid patientId, Guid labResultId)
+    public async Task<LabResultResponseDto> GetById(Guid patientId, Guid labResultId)
     {
         // if (!Guid.TryParse(id, out Guid patientId))
         //     throw new InvalidOperationException("PatientId invalid");
@@ -101,7 +101,7 @@ public class LabResultsController : ControllerBase
     }
     
     [HttpGet("/api/lab-results/{labResultId}")]
-    public async Task<LabResultDto> GetById(Guid labResultId)
+    public async Task<LabResultResponseDto> GetById(Guid labResultId)
     {
         var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "userId");
         if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId))
@@ -177,7 +177,7 @@ public class LabResultsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<LabResultDto>> Create([FromForm] LabResultDto labResultDto)
+    public async Task<ActionResult<LabResultRequestDto>> Create([FromForm] LabResultRequestDto labResultDto)
     {
         var userIdClaim = User.Claims.FirstOrDefault(x => x.Type == "userId");
         if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId))

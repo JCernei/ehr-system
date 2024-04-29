@@ -15,7 +15,7 @@ public class CreateLabResultHandler : IRequestHandler<CreateLabResultCommand, Co
     public CreateLabResultHandler(ApplicationDbContext dbContext)
     {
         this.dbContext = dbContext;
-        fileStoragePath = Path.Combine(Directory.GetCurrentDirectory(), "UploadedFiles"); // Change this path as needed
+        fileStoragePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "UploadedFiles");
     }
 
     public async Task<CommandStatus> Handle(CreateLabResultCommand request, CancellationToken cancellationToken)

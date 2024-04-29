@@ -35,7 +35,7 @@
 
 @code {
     [Parameter] public string? PatientId { get; set; }
-    private List<LabResultDto> labResults = new();
+    private List<LabResultResponseDto> labResults = new();
     
     protected override async Task OnInitializedAsync()
     {
@@ -48,6 +48,6 @@
 
     public async Task GetLabResults()
     {
-        labResults = await HttpClient.GetFromJsonAsync<List<LabResultDto>>($"api/{PatientId}/lab-results");
+        labResults = await HttpClient.GetFromJsonAsync<List<LabResultResponseDto>>($"api/{PatientId}/lab-results");
     }
 }

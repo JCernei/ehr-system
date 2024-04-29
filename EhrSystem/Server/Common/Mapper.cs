@@ -16,9 +16,9 @@ public static class Mapper
         };
     }
     
-    public static LabResultDto Map(LabResult source)
+    public static LabResultResponseDto Map(LabResult source)
     {
-        return new LabResultDto
+        return new LabResultResponseDto()
         {
             // PatientId = source.PatientId.ToString(),
             // LabTechnicianId = source.LabTechnicianId.ToString(),
