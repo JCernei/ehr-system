@@ -16,19 +16,30 @@
     }
     else
     {
-        <Virtualize Items="labResults" Context="labResult">
-            <MudLink Href='@String.Format($"http://localhost:5254/lab-results/{labResult.Id}")'>
-                <MudItem md="12">
-                        <MudCard>
-                            <MudCardContent>
-                                <MudText>Test Name: @labResult.TestName</MudText>
-                                <MudText>Date: @labResult.TimeStamp.ToString("dd/mm/yyyy")</MudText>
-                                <!-- Add more details here as needed -->
-                            </MudCardContent>
-                        </MudCard>
-                </MudItem>
-            </MudLink>
-        </Virtualize>
+        <MudItem md="12">
+            <MudDataGrid Items="labResults" ReadOnly="true">
+                <Columns>
+                    <HierarchyColumn T="LabResultResponseDto"/>
+                    <PropertyColumn Property="x => x.TestName" Title="Test"/>
+                    <PropertyColumn Property="x => x.TimeStamp" Title="Time"/>
+                </Columns>
+                <ChildRowContent>
+                    <MudItem>
+                        <MudText>Download:</MudText>
+                        <MudLink Class="btn"
+                                 download=@($"{context.Item.TestName} {context.Item.TimeStamp:dd-MM-yyyy}{context.Item.FileType}".Replace(" ", "_"))
+                                 role="button"
+                                 Href=@($"http://localhost:5254/api/lab-results/{context.Item.Id}/download")
+                                 Target="_top">
+                            @($"{context.Item.TestName} {context.Item.TimeStamp:dd-MM-yyyy}{context.Item.FileType}".Replace(" ", "_"))
+                        </MudLink>
+                    </MudItem>
+                </ChildRowContent>
+                <PagerContent>
+                    <MudDataGridPager T="LabResultResponseDto"/>
+                </PagerContent>
+            </MudDataGrid>
+        </MudItem>
     }
 </MudGrid>
 
