@@ -1,5 +1,4 @@
 @page "/new-user"
-@using Microsoft.AspNetCore.Authorization
 @layout MainLayout
 @inject AuthService AuthService
 @inject NavigationManager NavigationManager
@@ -9,57 +8,56 @@
 
 <MudItem sm="5">
     <MudCard>
-        <MudCardHeader>
-            <CardHeaderContent>
-                <MudText Typo="Typo.h5">Create User</MudText>
-            </CardHeaderContent>
-        </MudCardHeader>
         <MudCardContent Class="justify-md-center ">
-            <MudTextField @bind-Value="newUser.FirstName" T="string" Label="FirstName"/>
-            <MudTextField @bind-Value="newUser.LastName" T="string" Label="LastName"/>
-            <MudTextField @bind-Value="newUser.Idnp" T="string" Label="IDNP"/>
-            <MudTextField @bind-Value="newUser.Password" T="string" Label="Password" InputType="InputType.Password"/>
-            <MudSelect T="string" @bind-SelectedValues="options" MultiSelection="true" Label="Roles">
-                <Virtualize Items="roles" Context="role">
-                    <MudSelectItem Value="@role">@role</MudSelectItem>
-                </Virtualize>
-            </MudSelect>
+            <MudForm @ref="form" @bind-IsValid="@isValid">
+                <MudTextField @bind-Value="newUser.FirstName" T="string" Label="FirstName" Required="true"/>
+                <MudTextField @bind-Value="newUser.LastName" T="string" Label="LastName" Required="true"/>
+                <MudTextField @bind-Value="newUser.Idnp" T="string" Label="IDNP" Required="true"/>
+                <MudTextField @bind-Value="newUser.Password" T="string" Label="Password" InputType="InputType.Password" Required="true"/>
+                <MudSelect T="string" @bind-SelectedValues="options" MultiSelection="true" Label="Roles" Required="true">
+                    <Virtualize Items="roles" Context="role">
+                        <MudSelectItem Value="@role">@role</MudSelectItem>
+                    </Virtualize>
+                </MudSelect>
+            </MudForm>
         </MudCardContent>
-        <MudButton Variant="Variant.Filled" OnClick="@CreateNewUser" Color="Color.Secondary" DisableElevation="true" Class="ma-4">Create User</MudButton>
+        <MudButton Variant="Variant.Filled" OnClick="@CreateNewUser" Color="Color.Secondary" DisableElevation="true" Disabled="@(!isValid)" Class="ma-4">Create User</MudButton>
     </MudCard>
 </MudItem>
 
-
 @code {
-    string[] roles = Enum.GetValues<UserRole>().Select(x => x.ToString()).ToArray();
+    readonly string[] roles = Enum.GetValues<UserRole>().Select(x => x.ToString()).ToArray();
     private static IEnumerable<string> options { get; set; } = new HashSet<string> { "User" };
-
     readonly RegisterDto newUser = new();
-    string registerError = string.Empty;
+    MudForm form;
+    bool isValid;
 
     protected override async Task OnInitializedAsync()
     {
         var isAuthenticated = await AuthService.IsUserAuthenticated();
 
         if (!isAuthenticated)
-            NavigationManager.NavigateTo("");
+            NavigationManager.NavigateTo("/login");
     }
 
     public async Task CreateNewUser()
     {
+        await form.Validate();
         newUser.Roles = options.Select(x => x).ToArray();
         var result = await AuthService.Register(newUser);
 
         if (result.Status)
-            NavigationManager.NavigateTo("");
+        {
+            Snackbar.Add("User Successfully Created", Severity.Success);
+            await form.ResetAsync();
+        }
+        else
+        {
+            Snackbar.Add($"{result.Message}", Severity.Error);
+            return;
+        }
 
-        registerError = result.Message;
         StateHasChanged();
-    }
-
-    private string GetMultiSelectionText(List<string> selectedValues)
-    {
-        return "User Roles";
     }
 
 }

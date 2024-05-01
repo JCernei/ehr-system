@@ -7,12 +7,11 @@
 
 <MudLayout>
     <MudAppBar Elevation="0" Color="Color.Primary">
-        <MudButton Href="/" Variant="Variant.Text" Style=@($"color:{Theme.PaletteDark.White}") Class="ml-4">Home</MudButton>
         <AuthorizeView>
             <Authorized>
                 <MudButton Href="/consultations" Variant="Variant.Text" Style=@($"color:{Theme.PaletteDark.White}") Class="ml-4">User Panel</MudButton>
                 <MudSpacer/>
-                <MudButton Href="/" OnClick="@Logout" Variant="Variant.Filled" DisableElevation="true" Color="Color.Secondary" Class="mr-4">Log Out</MudButton>
+                <MudButton Href="/login" OnClick="@Logout" Variant="Variant.Filled" DisableElevation="true" Color="Color.Secondary" Class="mr-4">Log Out</MudButton>
             </Authorized>
             <NotAuthorized>
                 <MudSpacer/>
@@ -27,7 +26,6 @@
         </MudContainer>
     </MudMainContent>
 </MudLayout>
-
 
 @code {
 

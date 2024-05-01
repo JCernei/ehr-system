@@ -1,17 +1,16 @@
 @page "/new-consultation"
-@using Microsoft.AspNetCore.Authorization
 @layout MainLayout
 @inject HttpClient HttpClient
 @inject AuthService AuthService
-@inject ISnackbar Snackbar
 @inject NavigationManager NavigationManager
 @attribute [Authorize(Roles = "Doctor")]
 
-<PageTitle>New Consultation</PageTitle>
 <MudGrid>
     <MudItem xs="12" sm="6" md="4">
         <MudAutocomplete T="string"
                          Label="User IDNP"
+                         Required="true"
+                         RequiredError="User IDNP is required!"
                          @bind-Value="UserIdnp"
                          SearchFunc="@Search"
                          AdornmentIcon="@Icons.Material.Filled.Search"
@@ -22,7 +21,8 @@
                Color="Color.Primary"
                DisableElevation="true"
                OnClick="@Continue"
-               Class="ma-4">
+               Class="ma-4"
+               Disabled="@string.IsNullOrEmpty(UserIdnp)">
         Continue
     </MudButton>
 
@@ -32,8 +32,7 @@
             <MudCard>
                 <MudCardContent>
                     <MudItem xs="12" md="3">
-                        <MudText Typo="Typo.h5" Class="pb-2"> @selectedUser.FirstName @selectedUser.LastName</MudText>
-                        <MudText> @selectedUser.Idnp </MudText>
+                        <MudText Typo="Typo.h5" Class="pb-2"> @selectedUser.FullName</MudText>
                         <MudText Class="pt-4">
                             @DateTime.Today.ToString("dd/MM/yyyy")
                         </MudText>
@@ -43,7 +42,7 @@
                                       Label="Description"
                                       AutoGrow="true"
                                       Required="true"
-                                      RequiredError="Description is required!"
+                                      Immediate="true"
                                       @bind-Value="newConsultation.Description"
                                       Variant="Variant.Outlined"
                                       Lines="15"/>
@@ -53,16 +52,10 @@
                         <MudButton Variant="Variant.Filled"
                                    Color="Color.Secondary"
                                    DisableElevation="true"
+                                   Disabled="@string.IsNullOrEmpty(newConsultation.Description)"
                                    OnClick="@CreateNewConsultation"
                                    Class="my-4">
                             Create Consultation
-                        </MudButton>
-                        <MudButton Variant="Variant.Filled"
-                                   Color="Color.Primary"
-                                   DisableElevation="true"
-                                   OnClick="@ViewConsultations"
-                                   Class="my-4">
-                            View Other Consultations
                         </MudButton>
                     </MudItem>
                 </MudCardContent>
@@ -75,23 +68,23 @@
     private string? UserIdnp { get; set; }
     private List<UserDto>? users = new();
     private UserDto? selectedUser = new();
-
     private bool isUserSelected;
-    private ConsultationResponseDto newConsultation = new();
+    private readonly ConsultationResponseDto newConsultation = new();
 
-    private string userId = string.Empty;
+    // private string userId = string.Empty;
 
     public async Task CreateNewConsultation()
     {
         newConsultation.PatientId = selectedUser.Id;
 
-        var result = await HttpClient.PostAsJsonAsync($"api/consultations/", newConsultation);
+        var result = await HttpClient.PostAsJsonAsync("api/consultations/", newConsultation);
         if (!result.IsSuccessStatusCode)
             Snackbar.Add("Description is required!", Severity.Error);
         else
         {
             isUserSelected = false;
-            Snackbar.Add("The consultation was sent successfully!", Severity.Success);
+            newConsultation.Description = string.Empty;
+            Snackbar.Add("The consultation was created successfully!", Severity.Success);
         }
     }
 
@@ -105,7 +98,7 @@
             return;
         }
 
-        userId = selectedUser.Id;
+        // userId = selectedUser.Id;
         isUserSelected = true;
         StateHasChanged();
     }
@@ -122,12 +115,6 @@
         StateHasChanged();
 
         await base.OnInitializedAsync();
-    }
-
-    public Task ViewConsultations()
-    {
-        NavigationManager?.NavigateTo($"{userId}/consultations/");
-        return Task.CompletedTask;
     }
 
     private async Task<IEnumerable<string>> Search(string value)
