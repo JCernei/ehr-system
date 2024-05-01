@@ -1,90 +1,159 @@
-@page "/{PatientId}/new-lab-result/"
+@page "/new-lab-result/"
+@using Microsoft.AspNetCore.Authorization
+@using System.Net.Http.Headers
+@using System.Net
 @layout MainLayout
 @inject HttpClient HttpClient
-
-@using System.Net.Http.Headers
+@inject AuthService AuthService
 @inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+@attribute [Authorize(Roles = "LabTechnician")]
 
 <PageTitle>Upload Lab Results</PageTitle>
+<MudGrid>
+    <MudItem xs="12" sm="6" md="4">
+        <MudAutocomplete T="string"
+                         Label="User IDNP"
+                         @bind-Value="UserIdnp"
+                         SearchFunc="@SearchUsers"
+                         AdornmentIcon="@Icons.Material.Filled.Search"
+                         AdornmentColor="Color.Primary"/>
+    </MudItem>
 
-<MudCard>
-    <MudCardContent>
-        <MudItem xs="12" sm="6" md="4">
-            <MudAutocomplete T="string"
-                             Label="Lab Name"
-                             @bind-Value="TestName"
-                             SearchFunc="@SearchLabNames"/>
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary"
+               Disabled="@(string.IsNullOrEmpty(UserIdnp))"
+               DisableElevation="true"
+               OnClick="@Continue"
+               Class="ma-4">
+        Continue
+    </MudButton>
+    
+    @if (isUserSelected)
+    {
+        <MudItem xs="12" sm="12" md="12">
+            <MudCard>
+                <MudCardContent>
+                    <MudForm @bind-IsValid="@isValid">
+                        <MudItem xs="12" sm="6" md="4">
+                            <MudAutocomplete T="string"
+                                             Label="Lab Name"
+                                             Required="true"
+                                             RequiredError="Lab name is required!"
+                                             @bind-Value="TestName"
+                                             SearchFunc="@SearchLabNames"/>
+                        </MudItem>
+                    
+                        <MudFileUpload T="IReadOnlyList<IBrowserFile>"
+                                       AppendMultipleFiles
+                                       OnFilesChanged="OnInputFileChanged"
+                                       Hidden="@false"
+                                       InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20"
+                                       InputStyle="opacity:0"
+                                       @ondragenter="@SetDragClass"
+                                       @ondragleave="@ClearDragClass"
+                                       @ondragend="@ClearDragClass">
+                
+                            <ButtonTemplate>
+                                <MudPaper Height="300px"
+                                          Outlined="true"
+                                          Class="@dragClass">
+                                    <MudText Typo="Typo.h6">
+                                        Drag and drop files here or click
+                                    </MudText>
+                                    @foreach (var file in fileNames)
+                                    {
+                                        <MudChip Color="Color.Dark" Text="@file"/>
+                                    }
+                                </MudPaper>
+                                
+                                <MudToolBar DisableGutters="true"
+                                            Class="relative d-flex justify-end gap-4 z-30">
+                                    <MudButton OnClick="@Clear"
+                                               Color="Color.Error"
+                                               Disabled="@(!fileNames.Any())"
+                                               Variant="Variant.Filled">
+                                        Clear
+                                    </MudButton>
+                                    <MudCardActions>
+                                        <MudButton Variant="Variant.Filled"
+                                                   Color="Color.Primary"
+                                                   Class="ml-auto"
+                                                   Disabled="@(!fileNames.Any() || !isValid)"
+                                                   OnClick="@(async () => await Submit())">
+                                            Submit
+                                        </MudButton>
+                                    </MudCardActions>
+                                </MudToolBar>
+                            </ButtonTemplate>
+                        </MudFileUpload>
+                    </MudForm>
+                </MudCardContent>
+            </MudCard>
         </MudItem>
-        <MudFileUpload T="IReadOnlyList<IBrowserFile>"
-                       AppendMultipleFiles
-                       OnFilesChanged="OnInputFileChanged"
-                       Hidden="@false"
-                       InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20"
-                       InputStyle="opacity:0"
-                       @ondragenter="@SetDragClass"
-                       @ondragleave="@ClearDragClass"
-                       @ondragend="@ClearDragClass">
-            <ButtonTemplate>
-                <MudPaper Height="300px"
-                          Outlined="true"
-                          Class="@dragClass">
-                    <MudText Typo="Typo.h6">
-                        Drag and drop files here or click
-                    </MudText>
-                    @foreach (var file in fileNames)
-                    {
-                        <MudChip Color="Color.Dark" Text="@file"/>
-                    }
-                </MudPaper>
-                <MudToolBar DisableGutters="true"
-                            Class="relative d-flex justify-end gap-4 z-30">
-                    <MudButton HtmlTag="label"
-                               Color="Color.Primary"
-                               for="@context.Id"
-                               Variant="Variant.Filled">
-                        Add file
-                    </MudButton>
-                    <MudButton OnClick="@Clear"
-                               Color="Color.Error"
-                               Disabled="@(!fileNames.Any())"
-                               Variant="Variant.Filled">
-                        Clear
-                    </MudButton>
-                </MudToolBar>
-            </ButtonTemplate>
-        </MudFileUpload>
-    </MudCardContent>
-    <MudCardActions>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" Disabled="@(!fileNames.Any())" OnClick="@(async () => await Submit())">Submit</MudButton>
-    </MudCardActions>
-</MudCard>
+    }
+</MudGrid>
 
 @code {
-    [Parameter] public string? PatientId { get; set; }
-    // private MudForm form;
+    private string? UserIdnp { get; set; }
+    private List<UserDto>? users = new();
+    private UserDto? selectedUser = new();
 
+    private bool isUserSelected;
+    private bool isValid;
+    private string PatientId = string.Empty;
     private String TestName;
-    // private LabResultDto labResult = new();
-    // private UserDto? user = new();
     
     private const string DefaultDragClass = "relative rounded-lg border-2 border-dashed pa-4 mt-4 mud-width-full mud-height-full z-10";
     private string dragClass = DefaultDragClass;
-    private List<string> fileNames => files.Select(x => x.Name).ToList();
-    private List<IBrowserFile> files = new();
-
-    private List<string> labNames = new List<string>
-    {
-        "Lab 1",
-        "Lab 2",
-        "Lab 3",
-        // Add more lab names as needed
-    };
     
-    private List<string> filteredLabNames;
+    private IReadOnlyList<IBrowserFile>? files;
+    // private List<string> fileNames => files.Select(x => x.Name).ToList();
+    private List<string> fileNames = new();
 
+    private List<string> labNames = new LabsAndDiagnostics().Names;
+    private List<string> filteredLabNames;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var isAuthenticated = await AuthService.IsUserAuthenticated();
+
+        if (!isAuthenticated)
+            NavigationManager.NavigateTo("/login");
+
+        await GetUsers();
+
+        StateHasChanged();
+
+        await base.OnInitializedAsync();
+    }
+    
+    public async Task GetUsers()
+    {
+        users = await HttpClient.GetFromJsonAsync<List<UserDto>>("api/users");
+    }
+    
+    private async Task<IEnumerable<string>> SearchUsers(string value)
+    {
+        var userIdnps = users.Select(x => x.Idnp).ToList();
+        if (string.IsNullOrEmpty(value))
+            return new[] { "" };
+        return userIdnps.Where(x => x.StartsWith(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+    
+    private async Task Continue()
+    {
+        selectedUser = users.FirstOrDefault(x => x.Idnp == UserIdnp);
+        PatientId = selectedUser.Id;
+        isUserSelected = true;
+        Clear();
+        TestName = String.Empty;
+        
+        StateHasChanged();
+    }
+    
     private async Task<IEnumerable<string>> SearchLabNames(string value)
     {
-        // Perform search based on the entered text and return matching lab names
         if (string.IsNullOrEmpty(value))
             return labNames;
         filteredLabNames = labNames.Where(name => name.ToLower().Contains(value.ToLower())).ToList();
@@ -93,7 +162,8 @@
 
     private async Task Clear()
     {
-        files.Clear();
+        fileNames.Clear();
+        // files.Clear();
         ClearDragClass();
         await Task.Delay(100);
     }
@@ -101,7 +171,9 @@
     private void OnInputFileChanged(InputFileChangeEventArgs e)
     {
         ClearDragClass();
-        files = e.GetMultipleFiles().ToList();
+        files = e.GetMultipleFiles();
+        Console.WriteLine(files.Count);
+        fileNames = files.Select(x => x.Name).ToList();
     }
 
     private void SetDragClass()
@@ -117,8 +189,6 @@
 
         using var content = new MultipartFormDataContent();
         content.Add(new StringContent(PatientId), "PatientId");
-        // content.Add(new StringContent("0"), "LabTechnicianId");
-        // content.Add(new StringContent("/"), "FilePath");
         content.Add(new StringContent(TestName), "TestName");
             
         foreach (var file in files)
@@ -133,7 +203,7 @@
 
                 content.Add(
                     content: fileContent,
-                    name: "\"files\"",
+                    name: "\"Files\"",
                     fileName: file.Name);
 
                 upload = true;
@@ -143,11 +213,23 @@
                 Console.WriteLine(ex.Message);
             }
         }
-        
+
         if (upload)
         {
             var response = await HttpClient.PostAsync("http://localhost:5254/api/LabResults/", content);
-            Console.WriteLine(response);
+            if (response.StatusCode == (HttpStatusCode)200)
+            {
+                Clear();
+                TestName = String.Empty;
+                Console.WriteLine("Cleaning up");
+                Snackbar.Add("Successfully Uploaded Lab Result", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add("An Eerror Occured", Severity.Error);
+            }
+
+        Console.WriteLine(response);
         }
     }
 }

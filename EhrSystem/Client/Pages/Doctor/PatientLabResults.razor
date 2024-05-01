@@ -1,53 +1,144 @@
-@page "/{PatientId}/lab-results"
+@page "/review-lab-results"
+@using Microsoft.AspNetCore.Authorization
 @layout MainLayout
 @inject HttpClient HttpClient
+@inject AuthService AuthService
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+@attribute [Authorize(Roles = "Doctor")]
 
 <PageTitle>Lab Results</PageTitle>
 
 <MudGrid>
-    <MudItem md="12">
-        <MudText Typo="Typo.h4" GutterBottom="true">Lab Results</MudText>
+    <MudItem xs="12" sm="6" md="4">
+        <MudAutocomplete T="string"
+                         Label="User IDNP"
+                         @bind-Value="UserIdnp"
+                         SearchFunc="@SearchUsers"
+                         AdornmentIcon="@Icons.Material.Filled.Search"
+                         AdornmentColor="Color.Primary"/>
     </MudItem>
-    @if (labResults is null || !labResults.Any())
+
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary"
+               Disabled="@(string.IsNullOrEmpty(UserIdnp))"
+               DisableElevation="true"
+               OnClick="@Continue"
+               Class="ma-4">
+        Continue
+    </MudButton>
+    
+    @if (isUserSelected)
     {
         <MudItem md="12">
-            <MudAlert Severity="Severity.Info">At the moment you do not have any lab results.</MudAlert>
+            <MudText Typo="Typo.h4" GutterBottom="true">Lab Results</MudText>
         </MudItem>
-    }
-    else
-    {
-        <Virtualize Items="labResults" Context="labResult">
-            <MudLink Href='@String.Format($"http://localhost:5254/{PatientId}/lab-results/{labResult.Id}")'>
-                <MudItem md="12">
-                    <MudCard>
-                        <MudCardContent>
-                            <MudText>Test Name: @labResult.TestName</MudText>
-                            <MudText>Date: @labResult.TimeStamp</MudText>
-                            <!-- Add more details here as needed -->
-                        </MudCardContent>
-                    </MudCard>
-                </MudItem>
-            </MudLink>
-        </Virtualize>
+        @if (labResults is null || !labResults.Any())
+        {
+            <MudItem md="12">
+                <MudAlert Severity="Severity.Info">At the moment you do not have any lab results.</MudAlert>
+            </MudItem>
+        }
+        else
+        {
+            <MudItem md="12">
+                <MudDataGrid Items="labResults" ReadOnly="true">
+                    <Columns>
+                        <HierarchyColumn T="LabResultResponseDto"/>
+                        <PropertyColumn Property="x => x.TestName" Title="Test"/>
+                        <PropertyColumn Property="x => x.TimeStamp" Title="Time"/>
+                    </Columns>
+                    <ChildRowContent>
+                        <MudItem>
+                            <MudText>Download:</MudText>
+                            
+                            <MudLink Class="btn"
+                                     download=@($"{context.Item.TestName} {context.Item.TimeStamp:dd-MM-yyyy}{context.Item.FileType}".Replace(" ", "_"))
+                                     role="button"
+                                     Href=@($"http://localhost:5254/api/{PatientId}/lab-results/{context.Item.Id}/download")
+                                     Target="_top">
+                                @($"{context.Item.TestName} {context.Item.TimeStamp:dd-MM-yyyy}{context.Item.FileType}".Replace(" ", "_"))
+                            </MudLink>
+                        </MudItem>
+                        <MudItem Class="relative d-flex justify-end mb-4">
+                          <MudButton OnClick="@(() => showReviewForm = !showReviewForm)" Class="ml-auto" Variant="Variant.Filled" Color="Color.Primary">Add Review</MudButton>
+                        </MudItem>
+                        @if (showReviewForm)
+                        {   
+                            <MudTextField Class="mb-4" T="string" Label="Lab review" Variant="Variant.Outlined" @bind-Value="sampleText" Immediate="true" AutoGrow Lines="3"/>
+                            <MudItem Class="relative d-flex justify-end gap-4 z-30">
+                                <MudButton Class="ml-auto" Disabled="@(string.IsNullOrEmpty(sampleText))" Variant="Variant.Filled" Color="Color.Secondary">Confirm</MudButton>
+                            </MudItem>
+                        }
+                    </ChildRowContent>
+                    <PagerContent>
+                        <MudDataGridPager T="LabResultResponseDto"/>
+                    </PagerContent>
+                </MudDataGrid>
+            </MudItem>
+        }
     }
 </MudGrid>
 
 
 @code {
-    [Parameter] public string? PatientId { get; set; }
+    private string? UserIdnp { get; set; }
+    private List<UserDto>? users = new();
+    private UserDto? selectedUser = new();
+    private string sampleText;
+
+    private bool isUserSelected;
+    private bool showReviewForm = false;
+
+    private string PatientId = string.Empty;
+    
     private List<LabResultResponseDto> labResults = new();
     
     protected override async Task OnInitializedAsync()
     {
-        await GetLabResults();
+        var isAuthenticated = await AuthService.IsUserAuthenticated();
+
+        if (!isAuthenticated)
+            NavigationManager.NavigateTo("/login");
+
+        await GetUsers();
 
         StateHasChanged();
 
         await base.OnInitializedAsync();
     }
-
-    public async Task GetLabResults()
+    
+    private async Task GetUsers()
     {
-        labResults = await HttpClient.GetFromJsonAsync<List<LabResultResponseDto>>($"api/{PatientId}/lab-results");
+        users = await HttpClient.GetFromJsonAsync<List<UserDto>>("api/users");
+    }
+    
+    private async Task<IEnumerable<string>> SearchUsers(string value)
+    {
+        var userIdnps = users.Select(x => x.Idnp).ToList();
+        if (string.IsNullOrEmpty(value))
+            return new[] { "" };
+        return userIdnps.Where(x => x.StartsWith(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+    
+    private async Task Continue()
+    {
+        selectedUser = users.FirstOrDefault(x => x.Idnp == UserIdnp);
+
+        if (selectedUser is null)
+        {
+            Snackbar.Add("User IDNP is required!", Severity.Error);
+            return;
+        }
+
+        PatientId = selectedUser.Id;
+        await GetLabResults(PatientId);
+        isUserSelected = true;
+        StateHasChanged();
+    }
+
+    private async Task GetLabResults(String patientId)
+    {
+        labResults = await HttpClient.GetFromJsonAsync<List<LabResultResponseDto>>($"api/{patientId}/lab-results");
     }
 }
