@@ -222,6 +222,11 @@
                 Clear();
                 TestName = String.Empty;
                 Console.WriteLine("Cleaning up");
+                Snackbar.Add("Successfully Uploaded Lab Result", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add("An Eerror Occured", Severity.Error);
             }
 
         Console.WriteLine(response);
