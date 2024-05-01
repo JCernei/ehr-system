@@ -2,10 +2,6 @@
 @layout EmptyLayout
 @inject NavigationManager NavigationManager
 @inject AuthService AuthService
-@inject ISnackbar Snackbar
-
-<MudSnackbarProvider/>
-<PageTitle>Log In</PageTitle>
 
 <MudGrid Class="justify-center">
     <MudItem sm="5">
@@ -16,19 +12,28 @@
                 </CardHeaderContent>
             </MudCardHeader>
             <MudCardContent Class="justify-md-center">
-                <MudTextField @bind-Value="userInfo.Idnp" T="string" Label="IDNP"/>
-                <MudTextField @bind-Value="userInfo.Password" T="string" Label="Password" InputType="InputType.Password"/>
+                <MudForm @bind-IsValid="@isValid">
+                    <MudTextField @bind-Value="userInfo.Idnp" T="string" Label="IDNP" Required="true"/>
+                    <MudTextField @bind-Value="userInfo.Password" T="string" Label="Password" InputType="InputType.Password" Required="true"/>
+                </MudForm>
             </MudCardContent>
         </MudCard>
         <MudPaper Class="pa-4 mt-4">
-            <MudButton Variant="Variant.Filled" FullWidth="true" OnClick="@LoginUser" Color="Color.Secondary" DisableElevation="true">Sign In</MudButton>
-            <MudButton Href="/" Variant="Variant.Filled" FullWidth="true" Color="Color.Primary" DisableElevation="true" Class="mt-2">Home</MudButton>
+            <MudButton Variant="Variant.Filled"
+                       FullWidth="true"
+                       OnClick="@LoginUser"
+                       Color="Color.Secondary"
+                       DisableElevation="true"
+                       Disabled="@(!isValid)">
+                Log In
+            </MudButton>
         </MudPaper>
     </MudItem>
 </MudGrid>
 
 @code {
     readonly LoginDto userInfo = new();
+    bool isValid;
 
     protected override async Task OnInitializedAsync()
     {

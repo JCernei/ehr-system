@@ -1,8 +1,8 @@
 @inherits LayoutComponentBase
 
 <MudThemeProvider Theme="AuthTheme"/>
-<MudDialogProvider />
-<MudSnackbarProvider />
+<MudDialogProvider/>
+<MudSnackbarProvider/>
 
 <MudLayout>
     <MudMainContent>
@@ -13,11 +13,12 @@
 </MudLayout>
 
 @code {
-    MudTheme AuthTheme = new()
+    readonly MudTheme AuthTheme = new()
     {
-        Palette = new PaletteLight()
+        Palette = new PaletteLight
         {
-            Background = new MudBlazor.Utilities.MudColor("#EEEEEE")
+            Background = new MudColor("#EEEEEE")
         }
     };
+
 }

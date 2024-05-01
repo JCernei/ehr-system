@@ -1,59 +1,158 @@
-@page "/{PatientId}/consultations/"
-@using Microsoft.AspNetCore.Authorization
+@page "/view-consultations/"
 @layout MainLayout
 @inject HttpClient HttpClient
 @attribute [Authorize(Roles = "Doctor")]
 
-<PageTitle>Consultations</PageTitle>
-
 <MudGrid>
-    <MudItem md="12">
-        <MudText Typo="Typo.h4" GutterBottom="true">Consultations</MudText>
+    <MudItem xs="12" sm="6" md="4">
+        <MudAutocomplete T="string"
+                         Label="User IDNP"
+                         Required="true"
+                         RequiredError="User IDNP is required!"
+                         @bind-Value="UserIdnp"
+                         SearchFunc="@Search"
+                         AdornmentIcon="@Icons.Material.Filled.Search"
+                         AdornmentColor="Color.Primary"/>
     </MudItem>
-    @if (consultations is null || !consultations.Any())
+
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary"
+               DisableElevation="true"
+               OnClick="@Continue"
+               Class="ma-4"
+               Disabled="@string.IsNullOrEmpty(UserIdnp)">
+        Continue
+    </MudButton>
+
+    @if (isUserSelected)
     {
-        <MudItem md="12">
-            <MudAlert Severity="Severity.Info">At the moment you do not have any consultation.</MudAlert>
-        </MudItem>
+        @if (consultations is null || !consultations.Any())
+        {
+            <MudItem md="12">
+                <MudAlert Severity="Severity.Info">At the moment you do not have any consultation.</MudAlert>
+            </MudItem>
+        }
+        else
+        {
+            <MudItem md="12">
+                <MudDataGrid Items="@consultations"
+                             ReadOnly="true"
+                             SortMode="SortMode.Multiple"
+                             QuickFilter="@quickFilter">
+                    <ToolBarContent>
+                        <MudItem md="2">
+                            <MudTextField T="string"
+                                          @bind-Value="searchString"
+                                          Placeholder="Search"
+                                          Adornment="Adornment.Start"
+                                          Immediate="true"
+                                          AdornmentIcon="@Icons.Material.Filled.Search"
+                                          IconSize="Size.Medium">
+                            </MudTextField>
+                        </MudItem>
+                    </ToolBarContent>
+                    <Columns>
+                        <HierarchyColumn T="ConsultationResponseDto"/>
+                        <PropertyColumn Property="x => x.TimeStamp" Title="Time"/>
+                        <PropertyColumn Property="x => doctors[x.DoctorId].FullName" Title="Doctor"/>
+                    </Columns>
+                    <ChildRowContent>
+                        <MudTextField T="string"
+                                      ReadOnly="true"
+                                      Variant="Variant.Text"
+                                      DisableUnderLine
+                                      AutoGrow
+                                      Text=@context.Item.Description/>
+                    </ChildRowContent>
+                    <PagerContent>
+                        <MudDataGridPager T="ConsultationResponseDto"/>
+                    </PagerContent>
+                </MudDataGrid>
+            </MudItem>
+        }
     }
-    else
-    {
-        <MudItem md="12">
-            <MudDataGrid Items="@consultations" ReadOnly="true">
-                <Columns>
-                    <HierarchyColumn T="ConsultationResponseDto"/>
-                    <PropertyColumn Property="x => x.PatientId" Title="Patient"/>
-                    <PropertyColumn Property="x => x.TimeStamp" Title="Time"/>
-                    <PropertyColumn Property="x => x.DoctorId" Title="Doctor"/>
-                </Columns>
-                <ChildRowContent>
-                    <MudTextField T="string" ReadOnly="true" Variant="Variant.Text" DisableUnderLine AutoGrow
-                                  Text=@context.Item.Description/>
-                </ChildRowContent>
-                <PagerContent>
-                    <MudDataGridPager T="ConsultationResponseDto"/>
-                </PagerContent>
-            </MudDataGrid>
-        </MudItem>
-    }
-</MudGrid>
+</MudGrid >
 
 @code {
-    [Parameter] public string? PatientId { get; set; }
     private List<ConsultationResponseDto> consultations = new();
+    private readonly Dictionary<string, UserDto?> doctors = new();
+    private string searchString = string.Empty;
+
+    private string? UserIdnp { get; set; }
+    private List<UserDto>? users = new();
+    private UserDto? selectedUser = new();
+    private bool isUserSelected;
+    private string userId = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        await GetConsultations();
+        await GetUsers();
+
+        // await GetConsultations();
+        // await GetDoctors();
 
         StateHasChanged();
 
         await base.OnInitializedAsync();
     }
 
+    public async Task GetUsers()
+    {
+        users = await HttpClient.GetFromJsonAsync<List<UserDto>>("api/users");
+    }
+
+    private async Task<IEnumerable<string>> Search(string value)
+    {
+        var userIdnps = users.Select(x => x.Idnp).ToList();
+        if (string.IsNullOrEmpty(value))
+            return new[] { "" };
+        return userIdnps.Where(x => x.StartsWith(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    private async Task Continue()
+    {
+        selectedUser = users.FirstOrDefault(x => x.Idnp == UserIdnp);
+
+        if (selectedUser is null)
+        {
+            Snackbar.Add("User IDNP is required!", Severity.Error);
+            return;
+        }
+
+        userId = selectedUser.Id;
+        isUserSelected = true;
+
+        await GetConsultations();
+        await GetDoctors();
+        StateHasChanged();
+    }
+
+    private Func<ConsultationResponseDto, bool> quickFilter => filter =>
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+
+        if (filter.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (doctors.Any(x => x.Value.FullName.Contains(searchString, StringComparison.OrdinalIgnoreCase)))
+            return true;
+
+        return false;
+    };
+
     private async Task GetConsultations()
     {
-        consultations = await HttpClient.GetFromJsonAsync<List<ConsultationResponseDto>>($"api/{PatientId}/consultations");
+        consultations = await HttpClient.GetFromJsonAsync<List<ConsultationResponseDto>>($"api/{userId}/consultations");
+    }
+
+    private async Task GetDoctors()
+    {
+        foreach (var consultation in consultations.Where(x => !doctors.ContainsKey(x.DoctorId)))
+        {
+            var user = await HttpClient.GetFromJsonAsync<UserDto>($"api/users/{consultation.DoctorId}");
+            doctors.TryAdd(consultation.DoctorId, user);
+        }
     }
 
 }
