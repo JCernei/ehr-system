@@ -17,9 +17,8 @@ public class GetUserByIdHandler : IRequestHandler<GetUserByIdQuery, User>
 
     public async Task<User> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
     {
-        var user = await context.Users
-            .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
-        
+        var user = await context.Users.FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+
         return user;
     }
 }

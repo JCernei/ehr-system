@@ -7,7 +7,7 @@
 
 <MudGrid>
     <MudItem md="12">
-        <MudText Typo="Typo.h4" GutterBottom="true">Consultations</MudText>
+        <MudText GutterBottom="true" Typo="Typo.h4">Consultations</MudText>
     </MudItem>
     @if (consultations is null || !consultations.Any())
     {
@@ -19,33 +19,33 @@
     {
         <MudItem md="12">
             <MudDataGrid Items="@consultations"
+                         QuickFilter="@quickFilter"
                          ReadOnly="true"
-                         SortMode="SortMode.Multiple"
-                         QuickFilter="@quickFilter">
+                         SortMode="SortMode.Multiple">
                 <ToolBarContent>
                     <MudItem md="2">
-                        <MudTextField T="string"
-                                      @bind-Value="searchString"
-                                      Placeholder="Search"
-                                      Adornment="Adornment.Start"
-                                      Immediate="true"
+                        <MudTextField Adornment="Adornment.Start"
                                       AdornmentIcon="@Icons.Material.Filled.Search"
-                                      IconSize="Size.Medium">
+                                      @bind-Value="searchString"
+                                      IconSize="Size.Medium"
+                                      Immediate="true"
+                                      Placeholder="Search"
+                                      T="string">
                         </MudTextField>
                     </MudItem>
                 </ToolBarContent>
                 <Columns>
                     <HierarchyColumn T="ConsultationResponseDto"/>
-                    <PropertyColumn Property="x => x.TimeStamp" Title="Time"/>
+                    <PropertyColumn Property="x => x.TimeStamp.Date.ToShortDateString()" Title="Time"/>
                     <PropertyColumn Property="x => doctors[x.DoctorId].FullName" Title="Doctor"/>
                 </Columns>
                 <ChildRowContent>
-                    <MudTextField T="string"
-                                  ReadOnly="true"
-                                  Variant="Variant.Text"
+                    <MudTextField AutoGrow
                                   DisableUnderLine
-                                  AutoGrow
-                                  Text=@context.Item.Description/>
+                                  ReadOnly="true"
+                                  T="string"
+                                  Text=@context.Item.Description
+                                  Variant="Variant.Text"/>
                 </ChildRowContent>
                 <PagerContent>
                     <MudDataGridPager T="ConsultationResponseDto"/>
@@ -97,5 +97,4 @@
             doctors.TryAdd(consultation.DoctorId, user);
         }
     }
-
 }

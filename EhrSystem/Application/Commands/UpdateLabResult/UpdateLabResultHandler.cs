@@ -1,4 +1,3 @@
-using AutoMapper;
 using Infrastructure.Persistence;
 using MediatR;
 
@@ -10,6 +9,8 @@ public class UpdateLabResultHandler : IRequestHandler<UpdateLabResultCommand, Co
 
     public UpdateLabResultHandler(ApplicationDbContext dbContext)
     {
+        ArgumentNullException.ThrowIfNull(dbContext);
+
         this.dbContext = dbContext;
     }
 
@@ -17,9 +18,7 @@ public class UpdateLabResultHandler : IRequestHandler<UpdateLabResultCommand, Co
     {
         var labResult = await dbContext.LabResults.FindAsync(request.LabResultId);
         if (labResult == null)
-        {
             throw new InvalidOperationException($"LabResult with ID {request.LabResultId} not found.");
-        }
 
         await dbContext.SaveChangesAsync(cancellationToken);
 

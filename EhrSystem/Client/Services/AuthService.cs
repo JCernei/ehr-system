@@ -1,5 +1,3 @@
-#region
-
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -8,8 +6,6 @@ using Blazored.LocalStorage;
 using Client.Common;
 using Microsoft.AspNetCore.Components.Authorization;
 using Shared;
-
-#endregion
 
 namespace Client.Services;
 
@@ -33,7 +29,8 @@ public class AuthService : AuthenticationStateProvider
     {
         var token = await localStorage.GetItemAsync<string>("authToken");
 
-        if (string.IsNullOrWhiteSpace(token)) return anonymous;
+        if (string.IsNullOrWhiteSpace(token))
+            return anonymous;
 
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
 
@@ -51,7 +48,14 @@ public class AuthService : AuthenticationStateProvider
     {
         var result = await httpClient.PostAsJsonAsync("api/account/register", data);
 
-        if (result.StatusCode != HttpStatusCode.OK) return new AuthResult { Status = false, Message = string.Empty };
+        if (result.StatusCode != HttpStatusCode.OK)
+        {
+            return new AuthResult
+            {
+                Status = false,
+                Message = string.Empty
+            };
+        }
 
         return new AuthResult { Status = true };
     }
@@ -60,7 +64,14 @@ public class AuthService : AuthenticationStateProvider
     {
         var result = await httpClient.PostAsJsonAsync("api/account/login", data);
 
-        if (!result.IsSuccessStatusCode) return new AuthResult { Status = false, Message = await result.Content.ReadAsStringAsync() };
+        if (!result.IsSuccessStatusCode)
+        {
+            return new AuthResult
+            {
+                Status = false,
+                Message = await result.Content.ReadAsStringAsync()
+            };
+        }
 
         var token = await result.Content.ReadAsStringAsync();
         await localStorage.SetItemAsync("authToken", token);

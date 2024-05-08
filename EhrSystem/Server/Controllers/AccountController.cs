@@ -42,7 +42,6 @@ public class AccountController : ControllerBase
         return result.IsSuccessful ? Ok() : BadRequest(new { result.Error });
     }
 
-
     [HttpPost]
     [Route("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto dto)
@@ -58,10 +57,7 @@ public class AccountController : ControllerBase
         if (!result.IsSuccessful)
             return BadRequest(result.Error);
 
-        var userDetailsQuery = new GetUserDetailsQuery
-        {
-            Idnp = dto.Idnp
-        };
+        var userDetailsQuery = new GetUserDetailsQuery { Idnp = dto.Idnp };
 
         var userDetails = await mediator.Send(userDetailsQuery);
 

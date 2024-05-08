@@ -1,5 +1,4 @@
 @page "/review-lab-results"
-@using Microsoft.AspNetCore.Authorization
 @layout MainLayout
 @inject HttpClient HttpClient
 @inject AuthService AuthService
@@ -10,28 +9,28 @@
 <PageTitle>Lab Results</PageTitle>
 
 <MudGrid>
-    <MudItem xs="12" sm="6" md="4">
-        <MudAutocomplete T="string"
-                         Label="User IDNP"
-                         @bind-Value="UserIdnp"
-                         SearchFunc="@SearchUsers"
+    <MudItem md="4" sm="6" xs="12">
+        <MudAutocomplete AdornmentColor="Color.Primary"
                          AdornmentIcon="@Icons.Material.Filled.Search"
-                         AdornmentColor="Color.Primary"/>
+                         @bind-Value="userIdnp"
+                         Label="User IDNP"
+                         SearchFunc="@SearchUsers"
+                         T="string"/>
     </MudItem>
 
-    <MudButton Variant="Variant.Filled"
+    <MudButton Class="ma-4"
                Color="Color.Primary"
-               Disabled="@(string.IsNullOrEmpty(UserIdnp))"
+               Disabled="@(string.IsNullOrEmpty(userIdnp))"
                DisableElevation="true"
                OnClick="@Continue"
-               Class="ma-4">
+               Variant="Variant.Filled">
         Continue
     </MudButton>
-    
+
     @if (isUserSelected)
     {
         <MudItem md="12">
-            <MudText Typo="Typo.h4" GutterBottom="true">Lab Results</MudText>
+            <MudText GutterBottom="true" Typo="Typo.h4">Lab Results</MudText>
         </MudItem>
         @if (labResults is null || !labResults.Any())
         {
@@ -51,23 +50,23 @@
                     <ChildRowContent>
                         <MudItem>
                             <MudText>Download:</MudText>
-                            
+
                             <MudLink Class="btn"
                                      download=@($"{context.Item.TestName} {context.Item.TimeStamp:dd-MM-yyyy}{context.Item.FileType}".Replace(" ", "_"))
+                                     Href=@($"http://localhost:5254/api/{patientId}/lab-results/{context.Item.Id}/download")
                                      role="button"
-                                     Href=@($"http://localhost:5254/api/{PatientId}/lab-results/{context.Item.Id}/download")
                                      Target="_top">
                                 @($"{context.Item.TestName} {context.Item.TimeStamp:dd-MM-yyyy}{context.Item.FileType}".Replace(" ", "_"))
                             </MudLink>
                         </MudItem>
-                        <MudItem Class="relative d-flex justify-end mb-4">
-                          <MudButton OnClick="@(() => showReviewForm = !showReviewForm)" Class="ml-auto" Variant="Variant.Filled" Color="Color.Primary">Add Review</MudButton>
+                        <MudItem Class="d-flex justify-end mb-4 relative">
+                            <MudButton Class="ml-auto" Color="Color.Primary" OnClick="@(() => showReviewForm = !showReviewForm)" Variant="Variant.Filled">Add Review</MudButton>
                         </MudItem>
                         @if (showReviewForm)
-                        {   
-                            <MudTextField Class="mb-4" T="string" Label="Lab review" Variant="Variant.Outlined" @bind-Value="sampleText" Immediate="true" AutoGrow Lines="3"/>
-                            <MudItem Class="relative d-flex justify-end gap-4 z-30">
-                                <MudButton Class="ml-auto" Disabled="@(string.IsNullOrEmpty(sampleText))" Variant="Variant.Filled" Color="Color.Secondary">Confirm</MudButton>
+                        {
+                            <MudTextField AutoGrow @bind-Value="sampleText" Class="mb-4" Immediate="true" Label="Lab review" Lines="3" T="string" Variant="Variant.Outlined"/>
+                            <MudItem Class="d-flex gap-4 justify-end relative z-30">
+                                <MudButton Class="ml-auto" Color="Color.Secondary" Disabled="@(string.IsNullOrEmpty(sampleText))" Variant="Variant.Filled">Confirm</MudButton>
                             </MudItem>
                         }
                     </ChildRowContent>
@@ -82,18 +81,18 @@
 
 
 @code {
-    private string? UserIdnp { get; set; }
+    private string? userIdnp;
     private List<UserDto>? users = new();
     private UserDto? selectedUser = new();
     private string sampleText;
 
     private bool isUserSelected;
-    private bool showReviewForm = false;
+    private bool showReviewForm;
 
-    private string PatientId = string.Empty;
-    
+    private string patientId = string.Empty;
+
     private List<LabResultResponseDto> labResults = new();
-    
+
     protected override async Task OnInitializedAsync()
     {
         var isAuthenticated = await AuthService.IsUserAuthenticated();
@@ -107,12 +106,12 @@
 
         await base.OnInitializedAsync();
     }
-    
+
     private async Task GetUsers()
     {
         users = await HttpClient.GetFromJsonAsync<List<UserDto>>("api/users");
     }
-    
+
     private async Task<IEnumerable<string>> SearchUsers(string value)
     {
         var userIdnps = users.Select(x => x.Idnp).ToList();
@@ -120,10 +119,10 @@
             return new[] { "" };
         return userIdnps.Where(x => x.StartsWith(value, StringComparison.InvariantCultureIgnoreCase));
     }
-    
+
     private async Task Continue()
     {
-        selectedUser = users.FirstOrDefault(x => x.Idnp == UserIdnp);
+        selectedUser = users.FirstOrDefault(x => x.Idnp == userIdnp);
 
         if (selectedUser is null)
         {
@@ -131,13 +130,13 @@
             return;
         }
 
-        PatientId = selectedUser.Id;
-        await GetLabResults(PatientId);
+        patientId = selectedUser.Id;
+        await GetLabResults(patientId);
         isUserSelected = true;
         StateHasChanged();
     }
 
-    private async Task GetLabResults(String patientId)
+    private async Task GetLabResults(string patientId)
     {
         labResults = await HttpClient.GetFromJsonAsync<List<LabResultResponseDto>>($"api/{patientId}/lab-results");
     }

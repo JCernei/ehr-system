@@ -1,11 +1,9 @@
-using System.Reflection.Metadata.Ecma335;
 using MediatR;
 
 namespace Application.Queries.GetFiles;
 
 public class GetFilesHandler : IRequestHandler<GetFilesQuery, List<Stream>>
 {
-    
     public async Task<List<Stream>> Handle(GetFilesQuery request, CancellationToken cancellationToken)
     {
         var files = new List<Stream>();
@@ -13,12 +11,12 @@ public class GetFilesHandler : IRequestHandler<GetFilesQuery, List<Stream>>
         {
             foreach (var filePath in request.FilePaths)
             {
-                if (System.IO.File.Exists(filePath))
+                if (File.Exists(filePath))
                 {
                     try
                     {
                         // Open the file stream for reading with appropriate access mode
-                        files.Add(System.IO.File.OpenRead(filePath));
+                        files.Add(File.OpenRead(filePath));
                     }
                     catch (Exception ex)
                     {

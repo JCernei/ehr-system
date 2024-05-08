@@ -1,6 +1,6 @@
 ﻿<Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
-        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(DefaultLayout)"/>
+        <AuthorizeRouteView DefaultLayout="@typeof(DefaultLayout)" RouteData="@routeData"/>
     </Found>
     <NotFound>
         <CascadingAuthenticationState>

@@ -2,7 +2,7 @@ namespace Client;
 
 public class LabsAndDiagnostics
 {
-    public List<string> Names = new List<string>
+    public List<string> Names = new()
     {
         // A
         "Acetaminophen Level",
@@ -35,6 +35,7 @@ public class LabsAndDiagnostics
         "At-Home Medical Tests",
         "Autism Spectrum Disorder (ASD) Screening",
         "Autonomic Testing",
+
         // B
         "Bacteria Culture Test",
         "Bacterial Vaginosis Test",
@@ -58,6 +59,7 @@ public class LabsAndDiagnostics
         "Bronchoscopy and Bronchoalveolar Lavage (BAL)",
         "BUN (Blood Urea Nitrogen)",
         "Burn Evaluation",
+
         // C
         "C-Peptide Test",
         "C-Reactive Protein (CRP) Test",
@@ -98,6 +100,7 @@ public class LabsAndDiagnostics
         "Crystals in Urine",
         "CSF Immunoglobulin G (IgG) Index",
         "Cytomegalovirus (CMV) Tests",
+
         // D
         "D-Dimer Test",
         "Dengue Fever Test",
@@ -113,6 +116,7 @@ public class LabsAndDiagnostics
         "Drug Testing",
         "Drug Use Screening Tests",
         "Dysphagia Tests",
+
         // E
         "Elastography",
         "Electrocardiogram",
@@ -123,6 +127,7 @@ public class LabsAndDiagnostics
         "Esophageal pH Test",
         "Estrogen Levels Test",
         "Estrogen Receptor, Progesterone Receptor Tests",
+
         // F
         "Fall Risk Assessment",
         "Fasting for a Blood Test",
@@ -135,6 +140,7 @@ public class LabsAndDiagnostics
         "Food Allergy Testing",
         "Free Light Chains",
         "Fungal Culture Test",
+
         // G
         "G6PD Test",
         "Galactosemia Tests",
@@ -148,6 +154,7 @@ public class LabsAndDiagnostics
         "Gonorrhea Test",
         "Gram Stain",
         "Growth Hormone Tests",
+
         // H
         "Haptoglobin (HP) Test",
         "Hearing Tests for Adults",
@@ -171,6 +178,7 @@ public class LabsAndDiagnostics
         "How to Understand Your Lab Results",
         "Human Papillomavirus (HPV) Test",
         "Hysteroscopy",
+
         // I
         "IGF-1 (Insulin-like Growth Factor 1) Test",
         "Immunofixation (IFE) Blood Test",
@@ -178,11 +186,13 @@ public class LabsAndDiagnostics
         "Insulin in Blood",
         "Intravenous Pyelogram (IVP)",
         "Iron Tests",
+
         // K
         "Karyotype Genetic Test",
         "Ketones in Blood",
         "Ketones in Urine",
         "Kidney Stone Analysis",
+
         // L
         "Lactate Dehydrogenase (LDH) Isoenzymes Test",
         "Lactate Dehydrogenase (LDH) Test",
@@ -197,6 +207,7 @@ public class LabsAndDiagnostics
         "Lung Function Tests",
         "Luteinizing Hormone (LH) Levels Test",
         "Lyme Disease Tests",
+
         // M
         "Magnesium Blood Test",
         "Malaria Tests",
@@ -213,18 +224,21 @@ public class LabsAndDiagnostics
         "Mucus in Urine",
         "Myasthenia Gravis Tests",
         "Myelography",
+
         // N
         "Nasal Swab",
         "Natriuretic Peptide Tests (BNP, NT-proBNP)",
         "Neurological Exam",
         "Nitrites in Urine",
         "Nonstress Test",
+
         // O
         "Obesity Screening",
         "Obsessive Compulsive Disorder (OCD) Test",
         "Opioid Testing",
         "Osmolality Tests",
         "Ova and Parasite Test",
+
         // P
         "Panic Disorder Test",
         "Pap Smear",
@@ -256,6 +270,7 @@ public class LabsAndDiagnostics
         "Prothrombin Time Test and INR (PT/INR)",
         "PTEN Genetic Test",
         "Pulse Oximetry",
+
         // R
         "Rapid Tests",
         "Rash Evaluation",
@@ -268,6 +283,7 @@ public class LabsAndDiagnostics
         "Respiratory Syncytial Virus (RSV) Tests",
         "Reticulocyte Count",
         "Rheumatoid Factor (RF) Test",
+
         // S
         "Salicylates Level",
         "Semen Analysis",
@@ -288,6 +304,7 @@ public class LabsAndDiagnostics
         "Sweat Test for Cystic Fibrosis",
         "Synovial Fluid Analysis",
         "Syphilis Tests",
+
         // T
         "Testosterone Levels Test",
         "Therapeutic Drug Monitoring",
@@ -304,10 +321,12 @@ public class LabsAndDiagnostics
         "TSH (Thyroid-stimulating hormone) Test",
         "Tuberculosis Screening",
         "Tumor Marker Tests",
+
         // U
         "Ultrasound",
         "Uric Acid Test",
         "Urobilinogen in Urine",
+
         // V
         "V/Q Scan",
         "Videonystagmography (VNG)",
@@ -315,19 +334,25 @@ public class LabsAndDiagnostics
         "Vitamin B Test",
         "Vitamin D Test",
         "Vitamin E (Tocopherol) Test",
+
         // W
         "What You Need to Know About Blood Testing",
         "White Blood Cell (WBC) in Stool",
         "White Blood Count (WBC)",
         "Whooping Cough Tests",
+
         // X
         "Xylose Testing",
+
         // Y
         "Yeast Infection Tests",
+
         // Z
         "Zika Virus Test",
+
         // 0-9
         "17-Hydroxyprogesterone",
+
         // Diagnostic imaging
         "Angiocardiography",
         "Angiography",

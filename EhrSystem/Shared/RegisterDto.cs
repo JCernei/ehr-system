@@ -1,6 +1,5 @@
 namespace Shared;
 
-
 public class RegisterDto
 {
     public string FirstName { get; set; }

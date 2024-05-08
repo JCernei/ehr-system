@@ -7,9 +7,9 @@
 
 <MudLayout>
     <MudAppBar Elevation="1">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@DrawerToggle"/>
+        <MudIconButton Color="Color.Inherit" Edge="Edge.Start" Icon="@Icons.Material.Filled.Menu" OnClick="@DrawerToggle"/>
         <MudSpacer/>
-        <MudButton Href="/login" OnClick="@Logout" Variant="Variant.Filled" DisableElevation="true" Color="Color.Secondary" Class="mr-4">Log Out</MudButton>
+        <MudButton Class="mr-4" Color="Color.Secondary" DisableElevation="true" Href="/login" OnClick="@Logout" Variant="Variant.Filled">Log Out</MudButton>
     </MudAppBar>
     <MudDrawer @bind-Open="drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <AuthorizeView Roles="User">
@@ -26,7 +26,7 @@
         </AuthorizeView>
     </MudDrawer>
     <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="my-10 px-16">
+        <MudContainer Class="my-10 px-16" MaxWidth="MaxWidth.ExtraLarge">
             @Body
         </MudContainer>
     </MudMainContent>
@@ -45,5 +45,4 @@
     {
         await AuthService.Logout();
     }
-
 }
