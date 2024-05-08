@@ -1,7 +1,4 @@
-using Application.Commands.LoginUser;
-using Application.Commands.RegisterUser;
 using Application.Queries.GetConsultations;
-using Application.Queries.GetUserDetails;
 using Application.Queries.GetLabResults;
 
 namespace Server.Composition;

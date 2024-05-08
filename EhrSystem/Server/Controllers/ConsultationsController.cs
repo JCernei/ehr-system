@@ -13,8 +13,8 @@ namespace Server.Controllers;
 [ApiController]
 public class ConsultationsController : ControllerBase
 {
-    private readonly IMediator mediator;
     private readonly ILogger<ConsultationsController> logger;
+    private readonly IMediator mediator;
 
     public ConsultationsController(IMediator mediator, ILogger<ConsultationsController> logger)
     {
@@ -30,10 +30,7 @@ public class ConsultationsController : ControllerBase
         if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId))
             throw new InvalidOperationException("UserId invalid");
 
-        var query = new GetConsultationsQuery
-        {
-            UserId = userId
-        };
+        var query = new GetConsultationsQuery { UserId = userId };
         var consultations = await mediator.Send(query);
 
         var consultationDtos = consultations.Select(Mapper.Map).ToList();
@@ -45,16 +42,11 @@ public class ConsultationsController : ControllerBase
     [Route("/api/{userId}/consultations")]
     public async Task<List<ConsultationResponseDto>> GetAllByUserId(Guid userId)
     {
-        logger.LogWarning("AICI");
-        var query = new GetConsultationsByUserIdQuery
-        {
-            UserId = userId
-        };
+        var query = new GetConsultationsByUserIdQuery { UserId = userId };
         var consultations = await mediator.Send(query);
         var consultationDtos = consultations.Select(Mapper.Map).ToList();
         return consultationDtos;
     }
-
 
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] ConsultationRequestDto consultationDto)

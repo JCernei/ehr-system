@@ -19,7 +19,6 @@ public class GetConsultationsByUserIdHandler : IRequestHandler<GetConsultationsB
     {
         var consultations = await context.Consultations
             .Include(x => x.Patient)
-            .Include(x => x.Doctor)
             .Where(x => x.Patient.Id == request.UserId)
             .AsNoTracking()
             .ToListAsync(cancellationToken);

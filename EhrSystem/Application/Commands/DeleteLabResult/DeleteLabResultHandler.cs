@@ -9,6 +9,8 @@ public class DeleteLabResultHandler : IRequestHandler<DeleteLabResultCommand, Co
 
     public DeleteLabResultHandler(ApplicationDbContext dbContext)
     {
+        ArgumentNullException.ThrowIfNull(dbContext);
+
         this.dbContext = dbContext;
     }
 
@@ -16,9 +18,7 @@ public class DeleteLabResultHandler : IRequestHandler<DeleteLabResultCommand, Co
     {
         var labResult = await dbContext.LabResults.FindAsync(request.LabResultId);
         if (labResult == null)
-        {
             throw new InvalidOperationException($"LabResult with ID {request.LabResultId} not found.");
-        }
 
         dbContext.LabResults.Remove(labResult);
         await dbContext.SaveChangesAsync(cancellationToken);

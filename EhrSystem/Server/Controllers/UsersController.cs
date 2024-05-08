@@ -1,6 +1,5 @@
 using Application.Queries.GetUserById;
 using Application.Queries.GetUsers;
-using Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Server.Common;
@@ -32,10 +31,7 @@ public class UsersController : ControllerBase
     [HttpGet("{id}")]
     public async Task<UserDto> GetById(Guid id)
     {
-        var query = new GetUserByIdQuery
-        {
-            Id = id
-        };
+        var query = new GetUserByIdQuery { Id = id };
         var user = await mediator.Send(query);
         var userDto = Mapper.Map(user);
         return userDto;

@@ -15,32 +15,33 @@ public static class Mapper
             TimeStamp = source.TimeStamp
         };
     }
-    
+
     public static LabResultResponseDto Map(LabResult source)
     {
-        return new LabResultResponseDto()
+        return new LabResultResponseDto
         {
             // PatientId = source.PatientId.ToString(),
             // LabTechnicianId = source.LabTechnicianId.ToString(),
             Id = source.Id.ToString(),
             TestName = source.TestName,
             FileType = Path.GetExtension(source.FilePaths[0]),
-            TimeStamp = source.TimeStamp,
-            // FilePath = source.FilePaths,
+            TimeStamp = source.TimeStamp
+
+            // FilePath = source.FilePaths
         };
     }
 
     public static LabResultDescriptionDto Map(LabResultDescription source)
     {
-        return new LabResultDescriptionDto()
+        return new LabResultDescriptionDto
         {
             PatientId = source.PatientId,
             LabResultId = source.LabResultId,
             DoctorId = source.DoctorId,
-            Description = source.Description,
+            Description = source.Description
         };
     }
-    
+
     public static UserDto Map(User source)
     {
         return new UserDto
@@ -48,7 +49,7 @@ public static class Mapper
             Id = source.Id.ToString(),
             Idnp = source.Idnp,
             FirstName = source.FirstName,
-            LastName = source.LastName,
+            LastName = source.LastName
         };
     }
 }

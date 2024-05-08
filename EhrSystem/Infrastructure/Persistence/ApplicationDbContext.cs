@@ -13,7 +13,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<LabResult> LabResults { get; set; }
     public DbSet<LabResultDescription> LabResultDescriptions { get; set; }
 
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Consultation>()
@@ -29,7 +28,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .Property(e => e.TimeStamp);
         modelBuilder.Entity<LabResultDescription>()
             .Property(e => e.TimeStamp);
-        
+
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.ApplyConfiguration(new RoleConfiguration());

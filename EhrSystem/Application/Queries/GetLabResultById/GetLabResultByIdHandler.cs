@@ -11,6 +11,8 @@ public class GetLabResultByIdHandler : IRequestHandler<GetLabResultByIdQuery, La
 
     public GetLabResultByIdHandler(ApplicationDbContext dbContext)
     {
+        ArgumentNullException.ThrowIfNull(dbContext);
+
         this.dbContext = dbContext;
     }
 
@@ -19,7 +21,7 @@ public class GetLabResultByIdHandler : IRequestHandler<GetLabResultByIdQuery, La
         var labResult = await dbContext.LabResults
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.PatientId == request.PatientId && x.Id == request.LabResultId, cancellationToken);
-       
+
         return labResult;
     }
 }

@@ -10,7 +10,7 @@ public class LabResultDescription : BaseEntity
     public Guid LabResultId { get; set; }
     public Guid DoctorId { get; set; }
     public string Description { get; set; }
-    
+
     // Navigation property for Patient and LabResult
     public User Patient { get; set; }
     public LabResult LabResult { get; set; }

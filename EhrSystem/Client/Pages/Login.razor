@@ -8,23 +8,23 @@
         <MudCard>
             <MudCardHeader>
                 <CardHeaderContent>
-                    <MudText Align="Align.Center" Typo="Typo.h5">Sign In</MudText>
+                    <MudText Align="Align.Center" Typo="Typo.h5">Log In</MudText>
                 </CardHeaderContent>
             </MudCardHeader>
             <MudCardContent Class="justify-md-center">
                 <MudForm @bind-IsValid="@isValid">
-                    <MudTextField @bind-Value="userInfo.Idnp" T="string" Label="IDNP" Required="true"/>
-                    <MudTextField @bind-Value="userInfo.Password" T="string" Label="Password" InputType="InputType.Password" Required="true"/>
+                    <MudTextField @bind-Value="userInfo.Idnp" Label="IDNP" Required="true" T="string"/>
+                    <MudTextField @bind-Value="userInfo.Password" InputType="InputType.Password" Label="Password" Required="true" T="string"/>
                 </MudForm>
             </MudCardContent>
         </MudCard>
-        <MudPaper Class="pa-4 mt-4">
-            <MudButton Variant="Variant.Filled"
+        <MudPaper Class="mt-4 pa-4">
+            <MudButton Color="Color.Secondary"
+                       Disabled="@(!isValid)"
+                       DisableElevation="true"
                        FullWidth="true"
                        OnClick="@LoginUser"
-                       Color="Color.Secondary"
-                       DisableElevation="true"
-                       Disabled="@(!isValid)">
+                       Variant="Variant.Filled">
                 Log In
             </MudButton>
         </MudPaper>
@@ -60,5 +60,4 @@
 
         StateHasChanged();
     }
-
 }

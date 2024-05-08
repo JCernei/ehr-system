@@ -6,29 +6,28 @@
 <MudSnackbarProvider/>
 
 <MudLayout>
-    <MudAppBar Elevation="0" Color="Color.Primary">
+    <MudAppBar Color="Color.Primary" Elevation="0">
         <AuthorizeView>
             <Authorized>
-                <MudButton Href="/consultations" Variant="Variant.Text" Style=@($"color:{Theme.PaletteDark.White}") Class="ml-4">User Panel</MudButton>
+                <MudButton Class="ml-4" Href="/consultations" Style=@($"color:{Theme.PaletteDark.White}") Variant="Variant.Text">User Panel</MudButton>
                 <MudSpacer/>
-                <MudButton Href="/login" OnClick="@Logout" Variant="Variant.Filled" DisableElevation="true" Color="Color.Secondary" Class="mr-4">Log Out</MudButton>
+                <MudButton Class="mr-4" Color="Color.Secondary" DisableElevation="true" Href="/login" OnClick="@Logout" Variant="Variant.Filled">Log Out</MudButton>
             </Authorized>
             <NotAuthorized>
                 <MudSpacer/>
-                <MudButton Href="/login" Variant="Variant.Filled" DisableElevation="true" Color="Color.Tertiary" Class="mr-4">Log In</MudButton>
+                <MudButton Class="mr-4" Color="Color.Tertiary" DisableElevation="true" Href="/login" Variant="Variant.Filled">Log In</MudButton>
             </NotAuthorized>
         </AuthorizeView>
     </MudAppBar>
 
     <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="my-8">
+        <MudContainer Class="my-8" MaxWidth="MaxWidth.ExtraLarge">
             @Body
         </MudContainer>
     </MudMainContent>
 </MudLayout>
 
 @code {
-
     private readonly MudTheme Theme = new()
     {
         Palette = new PaletteLight
@@ -41,5 +40,4 @@
     {
         await AuthService.Logout();
     }
-
 }

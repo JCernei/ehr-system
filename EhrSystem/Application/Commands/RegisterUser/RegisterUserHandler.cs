@@ -36,7 +36,6 @@ public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, CommandS
             UserName = request.Idnp
         };
 
-
         var createResult = await userManager.CreateAsync(user, request.Password);
         if (!createResult.Succeeded)
             return CommandStatus.Failed("The user could not be created");
@@ -44,7 +43,6 @@ public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, CommandS
         var roleResult = await userManager.AddToRolesAsync(user, roles);
         if (!roleResult.Succeeded)
             return CommandStatus.Failed("The user could not be registered");
-
 
         return new CommandStatus();
     }

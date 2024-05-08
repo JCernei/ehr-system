@@ -6,55 +6,55 @@
 @attribute [Authorize(Roles = "Doctor")]
 
 <MudGrid>
-    <MudItem xs="12" sm="6" md="4">
-        <MudAutocomplete T="string"
+    <MudItem md="4" sm="6" xs="12">
+        <MudAutocomplete AdornmentColor="Color.Primary"
+                         AdornmentIcon="@Icons.Material.Filled.Search"
+                         @bind-Value="userIdnp"
                          Label="User IDNP"
                          Required="true"
                          RequiredError="User IDNP is required!"
-                         @bind-Value="UserIdnp"
                          SearchFunc="@Search"
-                         AdornmentIcon="@Icons.Material.Filled.Search"
-                         AdornmentColor="Color.Primary"/>
+                         T="string"/>
     </MudItem>
 
-    <MudButton Variant="Variant.Filled"
+    <MudButton Class="ma-4"
                Color="Color.Primary"
+               Disabled="@string.IsNullOrEmpty(userIdnp)"
                DisableElevation="true"
                OnClick="@Continue"
-               Class="ma-4"
-               Disabled="@string.IsNullOrEmpty(UserIdnp)">
+               Variant="Variant.Filled">
         Continue
     </MudButton>
 
     @if (isUserSelected)
     {
-        <MudItem xs="12" sm="12" md="12">
+        <MudItem md="12" sm="12" xs="12">
             <MudCard>
                 <MudCardContent>
-                    <MudItem xs="12" md="3">
-                        <MudText Typo="Typo.h5" Class="pb-2"> @selectedUser.FullName</MudText>
+                    <MudItem md="3" xs="12">
+                        <MudText Class="pb-2" Typo="Typo.h5"> @selectedUser.FullName</MudText>
                         <MudText Class="pt-4">
                             @DateTime.Today.ToString("dd/MM/yyyy")
                         </MudText>
                     </MudItem>
-                    <MudItem xs="12" md="12">
-                        <MudTextField T="string"
-                                      Label="Description"
-                                      AutoGrow="true"
-                                      Required="true"
-                                      Immediate="true"
+                    <MudItem md="12" xs="12">
+                        <MudTextField AutoGrow="true"
                                       @bind-Value="newConsultation.Description"
-                                      Variant="Variant.Outlined"
-                                      Lines="15"/>
+                                      Immediate="true"
+                                      Label="Description"
+                                      Lines="15"
+                                      Required="true"
+                                      T="string"
+                                      Variant="Variant.Outlined"/>
                     </MudItem>
 
-                    <MudItem xs="12" md="12">
-                        <MudButton Variant="Variant.Filled"
+                    <MudItem md="12" xs="12">
+                        <MudButton Class="my-4"
                                    Color="Color.Secondary"
-                                   DisableElevation="true"
                                    Disabled="@string.IsNullOrEmpty(newConsultation.Description)"
+                                   DisableElevation="true"
                                    OnClick="@CreateNewConsultation"
-                                   Class="my-4">
+                                   Variant="Variant.Filled">
                             Create Consultation
                         </MudButton>
                     </MudItem>
@@ -65,13 +65,11 @@
 </MudGrid>
 
 @code {
-    private string? UserIdnp { get; set; }
+    private string? userIdnp;
     private List<UserDto>? users = new();
     private UserDto? selectedUser = new();
     private bool isUserSelected;
     private readonly ConsultationResponseDto newConsultation = new();
-
-    // private string userId = string.Empty;
 
     public async Task CreateNewConsultation()
     {
@@ -90,7 +88,7 @@
 
     private async Task Continue()
     {
-        selectedUser = users.FirstOrDefault(x => x.Idnp == UserIdnp);
+        selectedUser = users.FirstOrDefault(x => x.Idnp == userIdnp);
 
         if (selectedUser is null)
         {
@@ -98,7 +96,6 @@
             return;
         }
 
-        // userId = selectedUser.Id;
         isUserSelected = true;
         StateHasChanged();
     }
@@ -129,5 +126,4 @@
     {
         users = await HttpClient.GetFromJsonAsync<List<UserDto>>("api/users");
     }
-
 }

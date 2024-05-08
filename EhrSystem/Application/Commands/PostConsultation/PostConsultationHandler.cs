@@ -28,6 +28,5 @@ public class PostConsultationHandler : IRequestHandler<PostConsultationCommand, 
         await context.SaveChangesAsync(cancellationToken);
 
         return new CommandStatus();
-
     }
 }

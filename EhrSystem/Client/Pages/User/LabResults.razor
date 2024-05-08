@@ -6,7 +6,7 @@
 
 <MudGrid>
     <MudItem md="12">
-        <MudText Typo="Typo.h4" GutterBottom="true">Lab Results</MudText>
+        <MudText GutterBottom="true" Typo="Typo.h4">Lab Results</MudText>
     </MudItem>
     @if (labResults is null || !labResults.Any())
     {
@@ -28,8 +28,8 @@
                         <MudText>Download:</MudText>
                         <MudLink Class="btn"
                                  download=@($"{context.Item.TestName} {context.Item.TimeStamp:dd-MM-yyyy}{context.Item.FileType}".Replace(" ", "_"))
-                                 role="button"
                                  Href=@($"http://localhost:5254/api/lab-results/{context.Item.Id}/download")
+                                 role="button"
                                  Target="_top">
                             @($"{context.Item.TestName} {context.Item.TimeStamp:dd-MM-yyyy}{context.Item.FileType}".Replace(" ", "_"))
                         </MudLink>
@@ -45,7 +45,6 @@
 
 
 @code {
-    // [Parameter] public string? PatientId { get; set; }
     private List<LabResultResponseDto> labResults;
 
     protected override async Task OnInitializedAsync()
@@ -59,6 +58,6 @@
 
     public async Task GetLabResults()
     {
-        labResults = await HttpClient.GetFromJsonAsync<List<LabResultResponseDto>>($"http://localhost:5254/api/lab-results");
+        labResults = await HttpClient.GetFromJsonAsync<List<LabResultResponseDto>>("/api/lab-results");
     }
 }

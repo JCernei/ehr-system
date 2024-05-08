@@ -4,23 +4,23 @@
 @attribute [Authorize(Roles = "Doctor")]
 
 <MudGrid>
-    <MudItem xs="12" sm="6" md="4">
-        <MudAutocomplete T="string"
+    <MudItem md="4" sm="6" xs="12">
+        <MudAutocomplete AdornmentColor="Color.Primary"
+                         AdornmentIcon="@Icons.Material.Filled.Search"
+                         @bind-Value="userIdnp"
                          Label="User IDNP"
                          Required="true"
                          RequiredError="User IDNP is required!"
-                         @bind-Value="UserIdnp"
                          SearchFunc="@Search"
-                         AdornmentIcon="@Icons.Material.Filled.Search"
-                         AdornmentColor="Color.Primary"/>
+                         T="string"/>
     </MudItem>
 
-    <MudButton Variant="Variant.Filled"
+    <MudButton Class="ma-4"
                Color="Color.Primary"
+               Disabled="@string.IsNullOrEmpty(userIdnp)"
                DisableElevation="true"
                OnClick="@Continue"
-               Class="ma-4"
-               Disabled="@string.IsNullOrEmpty(UserIdnp)">
+               Variant="Variant.Filled">
         Continue
     </MudButton>
 
@@ -36,33 +36,33 @@
         {
             <MudItem md="12">
                 <MudDataGrid Items="@consultations"
+                             QuickFilter="@quickFilter"
                              ReadOnly="true"
-                             SortMode="SortMode.Multiple"
-                             QuickFilter="@quickFilter">
+                             SortMode="SortMode.Multiple">
                     <ToolBarContent>
                         <MudItem md="2">
-                            <MudTextField T="string"
-                                          @bind-Value="searchString"
-                                          Placeholder="Search"
-                                          Adornment="Adornment.Start"
-                                          Immediate="true"
+                            <MudTextField Adornment="Adornment.Start"
                                           AdornmentIcon="@Icons.Material.Filled.Search"
-                                          IconSize="Size.Medium">
+                                          @bind-Value="searchString"
+                                          IconSize="Size.Medium"
+                                          Immediate="true"
+                                          Placeholder="Search"
+                                          T="string">
                             </MudTextField>
                         </MudItem>
                     </ToolBarContent>
                     <Columns>
                         <HierarchyColumn T="ConsultationResponseDto"/>
-                        <PropertyColumn Property="x => x.TimeStamp" Title="Time"/>
+                        <PropertyColumn Property="x => x.TimeStamp.Date.ToShortDateString()" Title="Time"/>
                         <PropertyColumn Property="x => doctors[x.DoctorId].FullName" Title="Doctor"/>
                     </Columns>
                     <ChildRowContent>
-                        <MudTextField T="string"
-                                      ReadOnly="true"
-                                      Variant="Variant.Text"
+                        <MudTextField AutoGrow
                                       DisableUnderLine
-                                      AutoGrow
-                                      Text=@context.Item.Description/>
+                                      ReadOnly="true"
+                                      T="string"
+                                      Text=@context.Item.Description
+                                      Variant="Variant.Text"/>
                     </ChildRowContent>
                     <PagerContent>
                         <MudDataGridPager T="ConsultationResponseDto"/>
@@ -78,7 +78,7 @@
     private readonly Dictionary<string, UserDto?> doctors = new();
     private string searchString = string.Empty;
 
-    private string? UserIdnp { get; set; }
+    private string? userIdnp;
     private List<UserDto>? users = new();
     private UserDto? selectedUser = new();
     private bool isUserSelected;
@@ -87,9 +87,6 @@
     protected override async Task OnInitializedAsync()
     {
         await GetUsers();
-
-        // await GetConsultations();
-        // await GetDoctors();
 
         StateHasChanged();
 
@@ -111,7 +108,7 @@
 
     private async Task Continue()
     {
-        selectedUser = users.FirstOrDefault(x => x.Idnp == UserIdnp);
+        selectedUser = users.FirstOrDefault(x => x.Idnp == userIdnp);
 
         if (selectedUser is null)
         {
@@ -154,5 +151,4 @@
             doctors.TryAdd(consultation.DoctorId, user);
         }
     }
-
 }

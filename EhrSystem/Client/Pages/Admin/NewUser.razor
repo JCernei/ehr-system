@@ -9,25 +9,25 @@
 <MudItem sm="5">
     <MudCard>
         <MudCardContent Class="justify-md-center ">
-            <MudForm @ref="form" @bind-IsValid="@isValid">
-                <MudTextField @bind-Value="newUser.FirstName" T="string" Label="FirstName" Required="true"/>
-                <MudTextField @bind-Value="newUser.LastName" T="string" Label="LastName" Required="true"/>
-                <MudTextField @bind-Value="newUser.Idnp" T="string" Label="IDNP" Required="true"/>
-                <MudTextField @bind-Value="newUser.Password" T="string" Label="Password" InputType="InputType.Password" Required="true"/>
-                <MudSelect T="string" @bind-SelectedValues="options" MultiSelection="true" Label="Roles" Required="true">
-                    <Virtualize Items="roles" Context="role">
+            <MudForm @bind-IsValid="@isValid" @ref="form">
+                <MudTextField @bind-Value="newUser.FirstName" Label="FirstName" Required="true" T="string"/>
+                <MudTextField @bind-Value="newUser.LastName" Label="LastName" Required="true" T="string"/>
+                <MudTextField @bind-Value="newUser.Idnp" Label="IDNP" Required="true" T="string"/>
+                <MudTextField @bind-Value="newUser.Password" InputType="InputType.Password" Label="Password" Required="true" T="string"/>
+                <MudSelect @bind-SelectedValues="options" Label="Roles" MultiSelection="true" Required="true" T="string">
+                    <Virtualize Context="role" Items="roles">
                         <MudSelectItem Value="@role">@role</MudSelectItem>
                     </Virtualize>
                 </MudSelect>
             </MudForm>
         </MudCardContent>
-        <MudButton Variant="Variant.Filled" OnClick="@CreateNewUser" Color="Color.Secondary" DisableElevation="true" Disabled="@(!isValid)" Class="ma-4">Create User</MudButton>
+        <MudButton Class="ma-4" Color="Color.Secondary" Disabled="@(!isValid)" DisableElevation="true" OnClick="@CreateNewUser" Variant="Variant.Filled">Create User</MudButton>
     </MudCard>
 </MudItem>
 
 @code {
     readonly string[] roles = Enum.GetValues<UserRole>().Select(x => x.ToString()).ToArray();
-    private static IEnumerable<string> options { get; set; } = new HashSet<string> { "User" };
+    IEnumerable<string> options = new HashSet<string> { "User" };
     readonly RegisterDto newUser = new();
     MudForm form;
     bool isValid;
@@ -59,5 +59,4 @@
 
         StateHasChanged();
     }
-
 }

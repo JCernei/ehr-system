@@ -1,4 +1,3 @@
-
 namespace Application.Commands;
 
 public class CommandStatus
