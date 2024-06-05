@@ -10,11 +10,12 @@
     <MudCard>
         <MudCardContent Class="justify-md-center ">
             <MudForm @bind-IsValid="@isValid" @ref="form">
-                <MudTextField @bind-Value="newUser.FirstName" Label="FirstName" Required="true" T="string"/>
-                <MudTextField @bind-Value="newUser.LastName" Label="LastName" Required="true" T="string"/>
-                <MudTextField @bind-Value="newUser.Idnp" Label="IDNP" Required="true" T="string"/>
-                <MudTextField @bind-Value="newUser.Password" InputType="InputType.Password" Label="Password" Required="true" T="string"/>
-                <MudSelect @bind-SelectedValues="options" Label="Roles" MultiSelection="true" Required="true" T="string">
+                <MudTextField @bind-Value="newUser.FirstName" Label="First Name" Required="true" RequiredError="" T="string"/>
+                <MudTextField @bind-Value="newUser.LastName" Label="Last Name" Required="true" RequiredError="" T="string"/>
+                <MudTextField @bind-Value="newUser.Idnp" Label="IDNP" Required="true" RequiredError="" T="string"/>
+                <MudTextField @bind-Value="newUser.Password" InputType="InputType.Password" Label="Password" Required="true" RequiredError="" T="string"/>
+                <MudTextField @bind-Value="repeatPassword" InputType="InputType.Password" Label="Repeat Password" Required="true" RequiredError="" T="string"/>
+                <MudSelect @bind-SelectedValues="options" Label="Roles" MultiSelection="true" Required="true" RequiredError="" T="string">
                     <Virtualize Context="role" Items="roles">
                         <MudSelectItem Value="@role">@role</MudSelectItem>
                     </Virtualize>
@@ -31,6 +32,8 @@
     readonly RegisterDto newUser = new();
     MudForm form;
     bool isValid;
+    string repeatPassword = String.Empty;
+    string error = String.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -42,8 +45,15 @@
 
     public async Task CreateNewUser()
     {
+        error = newUser.Password != repeatPassword ? "Passwords does not match" : "";
         await form.Validate();
         newUser.Roles = options.Select(x => x).ToArray();
+        if (error != String.Empty)
+        {
+            Snackbar.Add($"{error}", Severity.Error);
+            return;
+        }
+
         var result = await AuthService.Register(newUser);
 
         if (result.Status)
