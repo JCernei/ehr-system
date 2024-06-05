@@ -1,0 +1,144 @@
+@page "/login"
+@layout MpassLayout
+@inject NavigationManager NavigationManager
+@inject AuthService AuthService
+
+<MudText Align="Align.Center" Style="font-size: 30px">Select authentication instrument</MudText>
+<MudGrid Class="justify-center" Spacing="4">
+    <MudItem Style="width: 300px;">
+        <MudCard Class="mud-theme-primary" Style="height: 100%">
+            <MudCardHeader Class="justify-end mb-n10">
+                <MudIcon Color="Color.Secondary" Icon="@Icons.Material.Filled.Info"/>
+            </MudCardHeader>
+            <MudCardContent Class="mx-n2 justify-center">
+                <MudText Align="Align.Center" Typo="Typo.h6">Mobile Signature</MudText>
+
+                <MudItem Class="d-flex justify-center">
+                    <MudImage Class="mt-2" Fluid="true" Src="images/glyph-mobile-signature.png" Width="100"/>
+                </MudItem>
+
+                <MudForm @bind-IsValid="@isValid">
+                    <MudTextField Adornment="Adornment.Start"
+                                  AdornmentText="+373"
+                                  @bind-Value="userInfo.Idnp"
+                                  Margin="Margin.Dense"
+                                  Placeholder="XXX00000"
+                                  Required="true"
+                                  RequiredError=""
+                                  Style="background-color: white; border-radius: 5px"
+                                  T="string"
+                                  Variant="Variant.Outlined"/>
+                </MudForm>
+                <MudButton Class="mt-4"
+                           Color="Color.Secondary"
+                           DisableElevation="true"
+                           FullWidth="true"
+                           Style="color: black"
+                           Variant="Variant.Filled">
+                    Send
+                </MudButton>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+
+    <MudItem Style="width: 300px;">
+        <MudCard Class="mud-theme-primary" Style="height: 100%">
+            <MudCardHeader Class="justify-end mb-n10">
+                <MudIcon Color="Color.Secondary" Icon="@Icons.Material.Filled.Info"/>
+            </MudCardHeader>
+            <MudCardContent Class="mx-n2 justify-center">
+                <MudText Align="Align.Center" Typo="Typo.h6">Electronic signature</MudText>
+
+                <MudItem Class="d-flex justify-center">
+                    <MudImage Class="mt-2" Fluid="true" Src="images/glyph-stisc.png" Width="100"/>
+                </MudItem>
+
+                <MudPaper>
+                    <MudText Align="Align.Center" Class="py-2">
+                        <b>Information Technology and Cyber Security Service</b>
+                    </MudText>
+                </MudPaper>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+
+    <MudItem Style="width: 300px;">
+        <MudCard Class="mud-theme-primary" Style="height: 100%">
+            <MudCardHeader Class="justify-end mb-n10">
+                <MudIcon Color="Color.Secondary" Icon="@Icons.Material.Filled.Info"/>
+            </MudCardHeader>
+            <MudCardContent Class="mx-n2 justify-center">
+                <MudText Align="Align.Center" Typo="Typo.h6">2-Step Authentication</MudText>
+
+                <MudItem Class="d-flex justify-center">
+                    <MudImage Class="my-2" Fluid="true" Src="images/TotpStep1.png" Width="170"/>
+                </MudItem>
+
+                <MudForm @bind-IsValid="@isValid">
+                    <MudTextField Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Person"
+                                  @bind-Value="userInfo.Idnp"
+                                  Margin="Margin.Dense"
+                                  Placeholder="IDNP"
+                                  Required="true"
+                                  RequiredError=""
+                                  Style="background-color: white; border-radius: 5px"
+                                  T="string"
+                                  Variant="Variant.Outlined"/>
+                    <MudTextField Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Lock"
+                                  @bind-Value="userInfo.Password"
+                                  Class="mt-4"
+                                  InputType="InputType.Password"
+                                  Margin="Margin.Dense"
+                                  Placeholder="Password"
+                                  Required="true"
+                                  RequiredError=""
+                                  Style="background-color: white; border-radius: 5px"
+                                  T="string"
+                                  Variant="Variant.Outlined"/>
+                </MudForm>
+                <MudButton Class="mt-4"
+                           Color="Color.Secondary"
+                           DisableElevation="true"
+                           FullWidth="true"
+                           OnClick="@LoginUser"
+                           Style="color: black"
+                           Variant="Variant.Filled">
+                    Sign In
+                </MudButton>
+                <MudText Style="font-size: 13px">Forgot my password | No verification code</MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+@code {
+    readonly LoginDto userInfo = new();
+    bool isValid;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var isAuthenticated = await AuthService.IsUserAuthenticated();
+
+        if (isAuthenticated)
+            NavigationManager.NavigateTo("");
+    }
+
+    public async Task LoginUser()
+    {
+        var result = await AuthService.Login(userInfo);
+
+        if (result.Status)
+        {
+            Snackbar.Add("Successfully Logged In", Severity.Success);
+            NavigationManager.NavigateTo("");
+        }
+        else
+        {
+            Snackbar.Add("Wrong Credentials", Severity.Error);
+            return;
+        }
+
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,88 @@
+@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="AuthTheme"/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
+
+<MudLayout>
+
+    <MudStack Spacing="0">
+        <MudToolBar Style="background: #1286a4; height: auto;">
+            <MudContainer Style="width: 1170px;" Class="d-flex align-center">
+                <MudImage Class="mr-2" Src="images/gov.png" Height="18" Width="16"/>
+                <MudText Color="Color.Secondary">Government of Republic of Moldova</MudText>
+                <MudSpacer />
+                <MudMenu
+                    Class="mr-5"
+                    StartIcon="@Icons.Material.Filled.Language"
+                    EndIcon="@Icons.Material.Filled.KeyboardArrowDown"
+                    Label="EN"
+                    Color="Color.Secondary"
+                    AnchorOrigin="Origin.BottomCenter"
+                    TransformOrigin="Origin.TopCenter">
+
+                    <MudMenuItem>Română</MudMenuItem>
+                    <MudMenuItem>Русский</MudMenuItem>
+                </MudMenu>
+                <MudButton Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Login">Sign In</MudButton>
+            </MudContainer>
+        </MudToolBar>
+
+        <MudPaper Square="true" Elevation="1">
+            <MudContainer Class="my-4" Style="width: 1170px;">
+                <MudStack Row="true">
+                    <MudImage Src="images/mpass-logo.png" Height="50" Width="150"/>
+                    <MudStack Spacing="0">
+                        <MudText Color="Color.Dark"><b>Authentication and Access</b></MudText>
+                        <MudText Color="Color.Dark"><b>Control Service</b></MudText>
+                    </MudStack>
+                </MudStack>
+            </MudContainer>
+        </MudPaper>
+    </MudStack>
+
+    <MudContainer Class="my-16" Style="width: 1170px;">
+        @Body
+    </MudContainer>
+
+    <MudAppBar Bottom="true" Style="color: white; background: #1286a4; height: 105px">
+        <MudGrid Spacing="0">
+            <MudContainer Style="width: 1170px;" Class="pt-10 d-flex justify-content-between">
+                <MudItem xs="12">
+                    <MudStack Spacing="0">
+                        <MudText Typo="Typo.h6">SUPPORT CENTER</MudText>
+                        <MudText Typo="Typo.subtitle1">Electronic Public Services</MudText>
+                        <MudText Typo="Typo.h5">022 <strong>820 000</strong></MudText>
+                    </MudStack>
+                </MudItem>
+                <MudItem Class="d-flex justify-center" xs="12">
+                    <MudStack Spacing="0">
+                        <MudText>Terms & Conditions</MudText>
+                        <MudText>Frequently Asked Questions</MudText>
+                        <MudText>Integration procedure</MudText>
+                        <MudText Typo="Typo.caption">suport.mpass@egov.md</MudText>
+                    </MudStack>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudStack Spacing="0">
+                        <MudText Align="Align.End">Ⓒ 2024 E-GOVERNANCE AGENCY</MudText>
+                        <MudText Align="Align.End" Typo="Typo.caption">Version 3.2405.21.9</MudText>
+                    </MudStack>
+                </MudItem>
+            </MudContainer>
+        </MudGrid>
+    </MudAppBar>
+
+</MudLayout>
+
+@code {
+    readonly MudTheme AuthTheme = new()
+    {
+        Palette = new PaletteLight
+        {
+            Background = new MudColor("#FFFFFF"),
+            Primary = new MudColor("#1286a4"),
+            Secondary = new MudColor("#FFFFFF"),
+        }
+    };
+}
